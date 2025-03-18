@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Menu, Lock, Unlock } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -21,21 +21,19 @@ export function HamburgerMenu() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const { toast } = useToast();
-  const [adminUnlocked, setAdminUnlocked] = useState(false);
+  const [, setLocation] = useLocation();
   const [showAdminDialog, setShowAdminDialog] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
 
-  const isAdmin = user?.role === "admin" || user?.role === "professional";
-
   const handleAdminAccess = () => {
     if (adminPassword === ADMIN_PASSWORD) {
-      setAdminUnlocked(true);
       setShowAdminDialog(false);
       setAdminPassword("");
       toast({
         title: "Acceso concedido",
-        description: "Panel de administración desbloqueado",
+        description: "Accediendo al panel de administración",
       });
+      setLocation("/admin");
     } else {
       toast({
         title: "Acceso denegado",
@@ -64,16 +62,14 @@ export function HamburgerMenu() {
               </Button>
             </Link>
 
-            {isAdmin && (
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-2"
-                onClick={() => !adminUnlocked && setShowAdminDialog(true)}
-              >
-                {adminUnlocked ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
-                Panel de Administración
-              </Button>
-            )}
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start gap-2"
+              onClick={() => setShowAdminDialog(true)}
+            >
+              <Lock className="h-4 w-4" />
+              Panel de Administración
+            </Button>
 
             <Link href="/subscriptions">
               <Button variant="ghost" className="w-full justify-start">
