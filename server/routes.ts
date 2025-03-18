@@ -30,6 +30,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const { message, history } = req.body;
     if (!message) return res.status(400).json({ message: "Mensaje requerido" });
 
+    // Verificar el límite de preguntas para usuarios normales
+    if (req.user!.role === UserRoles.USER) {
+      const user = await storage.getUser(req.user!.id);
+      if (user && user.questionCount >= 5) {
+        return res.status(403).json({ 
+          message: "Has alcanzado el límite de preguntas gratuitas",
+          redirectTo: "/subscriptions" 
+        });
+      }
+    }
+
     try {
       const response = await generateChatResponse(message, history);
       const messages: Message[] = [
@@ -37,6 +48,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         { role: "user", content: message, timestamp: new Date().toISOString() },
         { role: "assistant", content: response, timestamp: new Date().toISOString() }
       ];
+
+      // Incrementar el contador de preguntas para usuarios normales
+      if (req.user!.role === UserRoles.USER) {
+        await storage.updateUser(req.user!.id, {
+          questionCount: (req.user!.questionCount || 0) + 1
+        });
+      }
 
       const chat = await storage.saveChat(req.user!.id, messages);
       res.json(chat);

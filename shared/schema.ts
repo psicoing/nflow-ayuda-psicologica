@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, json, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, json, boolean, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -10,6 +10,7 @@ export const users = pgTable("users", {
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
   lastLoginAt: timestamp("last_login_at"),
+  questionCount: integer("question_count").notNull().default(0), // Contador de preguntas
 });
 
 export const chats = pgTable("chats", {

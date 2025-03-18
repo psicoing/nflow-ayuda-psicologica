@@ -10,9 +10,11 @@ import { Message } from "@shared/schema";
 import { format } from "date-fns";
 import { ArrowLeft, Send, Loader2 } from "lucide-react";
 import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ChatPage() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [message, setMessage] = useState("");
   const [currentHistory, setCurrentHistory] = useState<Message[]>([]);
 
@@ -26,11 +28,27 @@ export default function ChatPage() {
         message,
         history: currentHistory,
       });
+
+      if (!res.ok) {
+        const error = await res.json();
+        if (error.redirectTo) {
+          window.location.href = error.redirectTo;
+        }
+        throw new Error(error.message);
+      }
+
       return res.json();
     },
     onSuccess: (data) => {
       setCurrentHistory(data.messages);
       queryClient.invalidateQueries({ queryKey: ["/api/chats"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 
