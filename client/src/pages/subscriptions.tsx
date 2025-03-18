@@ -75,11 +75,11 @@ export default function SubscriptionsPage() {
               Recomendado
             </div>
             <CardHeader>
-              <CardTitle>Plan Premium</CardTitle>
+              <CardTitle>Plan ASEQUIBLE</CardTitle>
               <CardDescription>Para un apoyo continuo</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="text-3xl font-bold">€9.99/mes</div>
+              <div className="text-3xl font-bold">€2.99/mes</div>
               <ul className="space-y-2">
                 <li className="flex items-center gap-2">
                   <MessageCircle className="h-4 w-4 text-primary" />
