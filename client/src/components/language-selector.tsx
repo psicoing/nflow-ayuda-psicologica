@@ -21,11 +21,15 @@ export function LanguageSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <Globe className="h-4 w-4" />
+        <Button variant="ghost" size="icon" className="relative">
+          <Globe className="h-5 w-5" />
+          <span className="sr-only">Seleccionar idioma</span>
+          <div className="absolute -bottom-1 -right-1 text-xs font-medium">
+            {i18n.language.toUpperCase()}
+          </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent align="end">
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
