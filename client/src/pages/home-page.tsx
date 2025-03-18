@@ -5,6 +5,7 @@ import { Link } from "wouter";
 import { Brain, MessageCircle, Library, LogOut } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "@/components/language-selector";
+import { HamburgerMenu } from "@/components/hamburger-menu";
 
 export default function HomePage() {
   const { user, logoutMutation } = useAuth();
@@ -18,6 +19,7 @@ export default function HomePage() {
             {t('welcome')}, {user?.username}
           </h1>
           <div className="flex items-center gap-2">
+            <HamburgerMenu />
             <LanguageSelector />
             <Button
               variant="outline"
