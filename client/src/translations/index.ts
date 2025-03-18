@@ -21,7 +21,18 @@ const resources = {
         "selfHelp": "Self-help guides",
         "community": "Community support groups"
       },
-      "logout": "Logout"
+      "logout": "Logout",
+      "adminPanel": {
+        "title": "Professional Administration Panel",
+        "pendingReviews": "Pending Reviews",
+        "reviewedChats": "Reviewed Chats",
+        "noChatsToReview": "No chats pending review",
+        "chatSession": "Chat Session",
+        "user": "User",
+        "assistant": "Assistant",
+        "approve": "Approve",
+        "flag": "Flag for Review"
+      }
     }
   },
   es: {
@@ -43,7 +54,18 @@ const resources = {
         "selfHelp": "Guías de autoayuda",
         "community": "Grupos de apoyo comunitario"
       },
-      "logout": "Cerrar sesión"
+      "logout": "Cerrar sesión",
+      "adminPanel": {
+        "title": "Panel de Administración Profesional",
+        "pendingReviews": "Revisiones Pendientes",
+        "reviewedChats": "Chats Revisados",
+        "noChatsToReview": "No hay chats pendientes de revisión",
+        "chatSession": "Sesión de Chat",
+        "user": "Usuario",
+        "assistant": "Asistente",
+        "approve": "Aprobar",
+        "flag": "Marcar para Revisión"
+      }
     }
   },
   fr: {
@@ -65,7 +87,18 @@ const resources = {
         "selfHelp": "Guides d'auto-assistance",
         "community": "Groupes de soutien communautaire"
       },
-      "logout": "Déconnexion"
+      "logout": "Déconnexion",
+      "adminPanel": {
+        "title": "Panneau d'Administration Professionnel",
+        "pendingReviews": "Révisions en Attente",
+        "reviewedChats": "Conversations Révisées",
+        "noChatsToReview": "Aucune conversation à réviser",
+        "chatSession": "Session de Chat",
+        "user": "Utilisateur",
+        "assistant": "Assistant",
+        "approve": "Approuver",
+        "flag": "Marquer pour Révision"
+      }
     }
   },
   ca: {
@@ -87,7 +120,18 @@ const resources = {
         "selfHelp": "Guies d'autoajuda",
         "community": "Grups de suport comunitari"
       },
-      "logout": "Tancar sessió"
+      "logout": "Tancar sessió",
+      "adminPanel": {
+        "title": "Panell d'Administració Professional",
+        "pendingReviews": "Revisions Pendents",
+        "reviewedChats": "Xats Revisats",
+        "noChatsToReview": "No hi ha xats pendents de revisió",
+        "chatSession": "Sessió de Xat",
+        "user": "Usuari",
+        "assistant": "Assistent",
+        "approve": "Aprovar",
+        "flag": "Marcar per Revisió"
+      }
     }
   }
 };

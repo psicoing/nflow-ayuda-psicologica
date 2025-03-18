@@ -1,6 +1,6 @@
 import { Message, User, InsertUser, Chat, users, chats } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { pool } from "./db";
@@ -13,6 +13,13 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   getChatHistory(userId: number): Promise<Chat[]>;
   saveChat(userId: number, messages: Message[]): Promise<Chat>;
+  getUnreviewedChats(): Promise<Chat[]>;
+  reviewChat(chatId: number, review: {
+    isReviewed: boolean;
+    isApproved: boolean;
+    reviewedBy: number;
+    reviewNotes?: string;
+  }): Promise<Chat>;
   sessionStore: session.Store;
 }
 
@@ -67,6 +74,29 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return chat;
+  }
+
+  // Nuevos métodos para el panel de administración
+  async getUnreviewedChats(): Promise<Chat[]> {
+    return db
+      .select()
+      .from(chats)
+      .where(eq(chats.isReviewed, false))
+      .orderBy(chats.createdAt);
+  }
+
+  async reviewChat(chatId: number, review: {
+    isReviewed: boolean;
+    isApproved: boolean;
+    reviewedBy: number;
+    reviewNotes?: string;
+  }): Promise<Chat> {
+    const [updatedChat] = await db
+      .update(chats)
+      .set(review)
+      .where(eq(chats.id, chatId))
+      .returning();
+    return updatedChat;
   }
 }
 
