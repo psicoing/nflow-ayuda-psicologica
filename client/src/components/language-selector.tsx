@@ -30,6 +30,7 @@ export function LanguageSelector() {
           <DropdownMenuItem
             key={lang.code}
             onClick={() => i18n.changeLanguage(lang.code)}
+            className="cursor-pointer"
           >
             {lang.name}
           </DropdownMenuItem>
