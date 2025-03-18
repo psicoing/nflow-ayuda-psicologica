@@ -10,7 +10,10 @@ export const users = pgTable("users", {
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
   lastLoginAt: timestamp("last_login_at"),
-  questionCount: integer("question_count").notNull().default(0), // Contador de preguntas
+  questionCount: integer("question_count").notNull().default(0),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  subscriptionStatus: text("subscription_status").default("free"),
 });
 
 export const chats = pgTable("chats", {

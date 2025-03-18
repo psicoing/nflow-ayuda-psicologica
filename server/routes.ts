@@ -4,6 +4,15 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { generateChatResponse } from "./openai";
 import { Message, UserRoles } from "@shared/schema";
+import Stripe from "stripe";
+
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error("Missing STRIPE_SECRET_KEY");
+}
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2023-10-16",
+});
 
 // Middleware para verificar rol de administrador
 const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
@@ -34,9 +43,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (req.user!.role === UserRoles.USER) {
       const user = await storage.getUser(req.user!.id);
       if (user && user.questionCount >= 5) {
-        return res.status(403).json({ 
+        return res.status(403).json({
           message: "Has alcanzado el límite de preguntas gratuitas",
-          redirectTo: "/subscriptions" 
+          redirectTo: "/subscriptions"
         });
       }
     }
@@ -118,6 +127,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     await storage.createAdminLog(req.user!.id, "flag_chat", { chatId, flagReason });
     res.json(chat);
   });
+
+  app.post("/api/create-subscription-session", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "No autenticado" });
+    }
+
+    try {
+      const session = await stripe.checkout.sessions.create({
+        mode: "subscription",
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price: process.env.STRIPE_PRICE_ID,
+            quantity: 1,
+          },
+        ],
+        success_url: `${req.protocol}://${req.get("host")}/chat?success=true`,
+        cancel_url: `${req.protocol}://${req.get("host")}/subscriptions?canceled=true`,
+        client_reference_id: req.user!.id.toString(),
+      });
+
+      res.json({ sessionUrl: session.url });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Webhook para manejar eventos de Stripe
+  app.post("/api/webhook", async (req, res) => {
+    const sig = req.headers["stripe-signature"];
+
+    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+      return res.status(500).json({ message: "Missing STRIPE_WEBHOOK_SECRET" });
+    }
+
+    try {
+      const event = stripe.webhooks.constructEvent(
+        req.body,
+        sig as string,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+
+      switch (event.type) {
+        case "checkout.session.completed": {
+          const session = event.data.object as Stripe.Checkout.Session;
+          if (session.client_reference_id) {
+            const userId = parseInt(session.client_reference_id);
+            await storage.updateUser(userId, {
+              stripeCustomerId: session.customer as string,
+              stripeSubscriptionId: session.subscription as string,
+              subscriptionStatus: "active",
+              role: "professional", // Actualizar el rol a professional
+            });
+          }
+          break;
+        }
+        case "customer.subscription.deleted": {
+          const subscription = event.data.object as Stripe.Subscription;
+          const user = await storage.getUserByStripeCustomerId(subscription.customer as string);
+          if (user) {
+            await storage.updateUser(user.id, {
+              subscriptionStatus: "canceled",
+              role: "user", // Volver al rol de usuario normal
+            });
+          }
+          break;
+        }
+      }
+
+      res.json({ received: true });
+    } catch (err) {
+      res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+  });
+
 
   const httpServer = createServer(app);
   return httpServer;
