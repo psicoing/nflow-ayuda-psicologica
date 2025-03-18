@@ -7,9 +7,16 @@ neonConfig.webSocketConstructor = ws;
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
+    "DATABASE_URL debe estar configurada. ¿Olvidaste provisionar la base de datos?",
   );
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle({ client: pool, schema });
+// Configuración del pool de conexiones de Neon
+export const pool = new Pool({ 
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false // Necesario para conexiones SSL de Neon
+  }
+});
+
+export const db = drizzle(pool, { schema });
