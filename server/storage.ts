@@ -1,4 +1,4 @@
-import { Message, User, InsertUser, Chat } from "@shared/schema";
+import { Message, User, InsertUser, Chat, users, chats } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import session from "express-session";
