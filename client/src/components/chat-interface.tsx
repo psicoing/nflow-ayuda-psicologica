@@ -4,19 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Message } from "@shared/schema";
 import { format } from "date-fns";
-import { Send, Loader2, Bot, User } from "lucide-react";
+import { Send, Loader2, Bot, User, AlertCircle } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface ChatInterfaceProps {
   messages: Message[];
   onSendMessage: (message: string) => void;
   isLoading: boolean;
+  user: any;
 }
 
 export function ChatInterface({
   messages,
   onSendMessage,
   isLoading,
+  user,
 }: ChatInterfaceProps) {
   const [input, setInput] = useState("");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -38,8 +41,33 @@ export function ChatInterface({
     inputRef.current?.focus();
   };
 
+  // Calcular mensajes restantes solo para usuarios normales
+  const remainingMessages = user?.role === "user" ? 5 - (user?.questionCount || 0) : null;
+
   return (
     <div className="flex flex-col h-full">
+      {user?.role === "user" && (
+        <div className="p-4 border-b">
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-muted-foreground">
+              Plan gratuito: {remainingMessages} mensajes restantes
+            </span>
+            <Button variant="outline" size="sm" asChild>
+              <a href="/subscriptions">Actualizar plan</a>
+            </Button>
+          </div>
+          {remainingMessages && remainingMessages <= 2 && (
+            <Alert className="mt-2">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Te quedan {remainingMessages} mensajes gratuitos. 
+                Considera actualizar a un plan premium para continuar la conversación.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+      )}
+
       <ScrollArea
         ref={scrollAreaRef}
         className="flex-1 p-4 space-y-4"
@@ -48,11 +76,16 @@ export function ChatInterface({
           <div className="flex flex-col items-center justify-center h-full space-y-4 text-center text-muted-foreground">
             <Bot className="h-12 w-12" />
             <div className="max-w-sm space-y-2">
-              <h3 className="font-semibold">Welcome to NFlow Mental Health Support</h3>
+              <h3 className="font-semibold">Bienvenido a NFlow Mental Health Support</h3>
               <p>
-                I'm here to listen and support you. Feel free to share what's on your mind.
-                Remember, I'm an AI assistant and not a replacement for professional help.
+                Estoy aquí para escucharte y apoyarte. Siéntete libre de compartir lo que tienes en mente.
+                Recuerda que soy un asistente de IA y no un reemplazo para ayuda profesional.
               </p>
+              {user?.role === "user" && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  Plan gratuito: Tienes 5 mensajes incluidos
+                </p>
+              )}
             </div>
           </div>
         ) : (
@@ -111,7 +144,7 @@ export function ChatInterface({
           ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message..."
+          placeholder="Escribe tu mensaje..."
           disabled={isLoading}
           className="flex-1"
         />
