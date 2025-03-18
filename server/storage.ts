@@ -1,4 +1,4 @@
-import { Message, User, InsertUser, Chat, users, chats } from "@shared/schema";
+import { Message, User, InsertUser, Chat, users, chats, AdminLog, adminLogs } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, isNull } from "drizzle-orm";
 import session from "express-session";
@@ -21,6 +21,11 @@ export interface IStorage {
     reviewNotes?: string;
   }): Promise<Chat>;
   sessionStore: session.Store;
+  getAllUsers(): Promise<User[]>;
+  getAllChats(): Promise<Chat[]>;
+  updateUser(id: number, data: Partial<User>): Promise<User>;
+  updateChat(id: number, data: Partial<Chat>): Promise<Chat>;
+  createAdminLog(adminId: number, action: string, details: any): Promise<AdminLog>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -76,7 +81,6 @@ export class DatabaseStorage implements IStorage {
     return chat;
   }
 
-  // Nuevos métodos para el panel de administración
   async getUnreviewedChats(): Promise<Chat[]> {
     return db
       .select()
@@ -97,6 +101,45 @@ export class DatabaseStorage implements IStorage {
       .where(eq(chats.id, chatId))
       .returning();
     return updatedChat;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return db.select().from(users).orderBy(users.createdAt);
+  }
+
+  async getAllChats(): Promise<Chat[]> {
+    return db.select().from(chats).orderBy(chats.createdAt);
+  }
+
+  async updateUser(id: number, data: Partial<User>): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set(data)
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async updateChat(id: number, data: Partial<Chat>): Promise<Chat> {
+    const [chat] = await db
+      .update(chats)
+      .set(data)
+      .where(eq(chats.id, id))
+      .returning();
+    return chat;
+  }
+
+  async createAdminLog(adminId: number, action: string, details: any): Promise<AdminLog> {
+    const [log] = await db
+      .insert(adminLogs)
+      .values({
+        adminId,
+        action,
+        details,
+        createdAt: new Date(),
+      })
+      .returning();
+    return log;
   }
 }
 
