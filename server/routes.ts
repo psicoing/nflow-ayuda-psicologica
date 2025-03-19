@@ -57,6 +57,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Rutas protegidas con manejo de errores
+  app.post("/api/register", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const existingUser = await storage.getUserByUsername(req.body.username);
+      if (existingUser) {
+        return res.status(400).send("El nombre de usuario ya existe");
+      }
+
+      const user = await storage.createUser({
+        ...req.body,
+        password: await hashPassword(req.body.password),
+      });
+
+      req.login(user, (err) => {
+        if (err) return next(err);
+        res.status(201).json(user);
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/login", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { username, password } = req.body;
+      const user = await storage.getUserByUsername(username);
+
+      if (!user) {
+        return res.status(401).json({ message: "Credenciales inválidas" });
+      }
+
+      // El resto de la lógica de autenticación se maneja en passport
+      next();
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // Rutas de administración
   app.get("/api/admin/users", requireAdmin, async (_req: Request, res: Response) => {
     const users = await storage.getAllUsers();
@@ -163,23 +201,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
     await storage.createAdminLog(req.user!.id, "flag_chat", { chatId, flagReason });
     res.json(chat);
-  });
-
-  app.post("/api/register", async (req: Request, res: Response, next: NextFunction) => {
-    const existingUser = await storage.getUserByUsername(req.body.username);
-    if (existingUser) {
-      return res.status(400).send("El nombre de usuario ya existe");
-    }
-
-    const user = await storage.createUser({
-      ...req.body,
-      password: await hashPassword(req.body.password),
-    });
-
-    req.login(user, (err) => {
-      if (err) return next(err);
-      res.status(201).json(user);
-    });
   });
 
 
