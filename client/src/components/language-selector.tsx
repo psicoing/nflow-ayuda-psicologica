@@ -10,9 +10,7 @@ import { Globe } from "lucide-react";
 
 const languages = [
   { code: "es", name: "Español" },
-  { code: "en", name: "English" },
-  { code: "fr", name: "Français" },
-  { code: "ca", name: "Català" }
+  { code: "en", name: "English" }
 ];
 
 export function LanguageSelector() {

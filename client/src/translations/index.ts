@@ -59,6 +59,7 @@ const resources = {
   }
 };
 
+// Inicializar i18n antes de que la aplicación se monte
 i18n
   .use(initReactI18next)
   .init({
@@ -67,7 +68,15 @@ i18n
     fallbackLng: "es",
     interpolation: {
       escapeValue: false
+    },
+    load: 'languageOnly',
+    detection: {
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage'],
     }
   });
+
+// Forzar el idioma español
+i18n.changeLanguage('es');
 
 export default i18n;
