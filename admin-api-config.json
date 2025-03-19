@@ -1,0 +1,33 @@
+{
+  "api": {
+    "baseURL": "https://mental-chat-ai-rmportbou.replit.app",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "withCredentials": true,
+    "corsConfig": {
+      "credentials": "include",
+      "allowedHeaders": ["Content-Type", "Authorization"],
+      "methods": ["GET", "POST", "PUT", "DELETE"]
+    }
+  },
+  "axiosConfig": {
+    "baseURL": "https://mental-chat-ai-rmportbou.replit.app",
+    "withCredentials": true,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "timeout": 10000
+  },
+  "fetchConfig": {
+    "credentials": "include",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "mode": "cors"
+  },
+  "examples": {
+    "axios": "const api = axios.create(config.axiosConfig);",
+    "fetch": "fetch(url, config.fetchConfig)"
+  }
+}
