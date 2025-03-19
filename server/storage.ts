@@ -41,7 +41,14 @@ export class DatabaseStorage implements IStorage {
 
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db
-      .select()
+      .select({
+        id: users.id,
+        username: users.username,
+        password: users.password,
+        role: users.role,
+        isActive: users.is_active,
+        createdAt: users.created_at
+      })
       .from(users)
       .where(eq(users.id, id));
     return user;
@@ -49,7 +56,14 @@ export class DatabaseStorage implements IStorage {
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     const [user] = await db
-      .select()
+      .select({
+        id: users.id,
+        username: users.username,
+        password: users.password,
+        role: users.role,
+        isActive: users.is_active,
+        createdAt: users.created_at
+      })
       .from(users)
       .where(eq(users.username, username));
     return user;
@@ -57,7 +71,14 @@ export class DatabaseStorage implements IStorage {
 
   async getUserByStripeCustomerId(stripeCustomerId: string): Promise<User | undefined> {
     const [user] = await db
-      .select()
+      .select({
+        id: users.id,
+        username: users.username,
+        password: users.password,
+        role: users.role,
+        isActive: users.is_active,
+        createdAt: users.created_at
+      })
       .from(users)
       .where(eq(users.stripeCustomerId, stripeCustomerId));
     return user;
@@ -113,7 +134,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllUsers(): Promise<User[]> {
-    return db.select().from(users).orderBy(users.createdAt);
+    return db
+      .select({
+        id: users.id,
+        username: users.username,
+        password: users.password,
+        role: users.role,
+        isActive: users.is_active,
+        createdAt: users.created_at
+      })
+      .from(users)
+      .orderBy(users.created_at);
   }
 
   async getAllChats(): Promise<Chat[]> {
