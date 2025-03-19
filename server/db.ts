@@ -22,6 +22,10 @@ const createPool = () => {
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
+    // Configuración específica de Neon para mejor rendimiento
+    maxUses: 10000, // Número máximo de consultas por conexión
+    keepAlive: true,
+    keepAliveInitialDelayMillis: 10000
   });
 };
 
@@ -39,10 +43,6 @@ pool.on('error', (err) => {
   }
 });
 
-// Exportar instancia de Drizzle con el pool
-export const db = drizzle(pool, { schema });
-console.log("[Database] ORM Drizzle configurado para la aplicación de salud mental");
-
 // Función para verificar la conexión
 export async function checkDatabaseConnection() {
   try {
@@ -57,3 +57,7 @@ export async function checkDatabaseConnection() {
 
 // Verificar conexión inicial
 checkDatabaseConnection().catch(console.error);
+
+// Exportar instancia de Drizzle con el pool
+export const db = drizzle(pool, { schema });
+console.log("[Database] ORM Drizzle configurado para la aplicación de salud mental");
