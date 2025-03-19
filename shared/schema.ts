@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, json, boolean, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -9,17 +9,12 @@ export const users = pgTable("users", {
   role: text("role").notNull().default("user"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
-  lastLoginAt: timestamp("last_login_at"),
-  questionCount: integer("question_count").notNull().default(0),
-  stripeCustomerId: text("stripe_customer_id"),
-  stripeSubscriptionId: text("stripe_subscription_id"),
-  subscriptionStatus: text("subscription_status").default("free"),
 });
 
 export const chats = pgTable("chats", {
   id: serial("id").primaryKey(),
   userId: serial("user_id").references(() => users.id),
-  messages: json("messages").$type<Message[]>().notNull(),
+  messages: jsonb("messages").$type<Message[]>().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   isReviewed: boolean("is_reviewed").notNull().default(false),
   reviewedBy: serial("reviewed_by").references(() => users.id),
@@ -32,7 +27,7 @@ export const adminLogs = pgTable("admin_logs", {
   id: serial("id").primaryKey(),
   adminId: serial("admin_id").references(() => users.id),
   action: text("action").notNull(),
-  details: json("details").notNull(),
+  details: jsonb("details").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
