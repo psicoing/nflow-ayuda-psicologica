@@ -153,6 +153,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
+      if (!process.env.STRIPE_PRICE_ID) {
+        throw new Error("No se ha configurado STRIPE_PRICE_ID");
+      }
+
       const session = await stripe.checkout.sessions.create({
         mode: "subscription",
         payment_method_types: ["card"],
@@ -164,7 +168,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ],
         success_url: `${req.protocol}://${req.get("host")}/chat?success=true&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${req.protocol}://${req.get("host")}/subscriptions?canceled=true`,
-        customer_email: req.user.email,
         client_reference_id: req.user.id.toString(),
       });
 
@@ -190,7 +193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       event = stripe.webhooks.constructEvent(
-        req.rawBody, 
+        req.rawBody,
         sig as string,
         process.env.STRIPE_WEBHOOK_SECRET
       );
