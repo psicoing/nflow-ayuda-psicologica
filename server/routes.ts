@@ -28,13 +28,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
   // Rutas existentes
-  app.get("/api/chats", async (req, res) => {
+  app.get("/api/chats", async (req: Request, res: Response) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "No autenticado" });
     const chats = await storage.getChatHistory(req.user!.id);
     res.json(chats);
   });
 
-  app.post("/api/chat", async (req, res) => {
+  app.post("/api/chat", async (req: Request, res: Response) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "No autenticado" });
 
     const { message, history } = req.body;
@@ -74,31 +74,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Rutas de administración
-  app.get("/api/admin/users", requireAdmin, async (_req, res) => {
+  app.get("/api/admin/users", requireAdmin, async (_req: Request, res: Response) => {
     const users = await storage.getAllUsers();
     res.json(users);
   });
 
-  app.get("/api/admin/chats", requireAdmin, async (_req, res) => {
+  app.get("/api/admin/chats", requireAdmin, async (_req: Request, res: Response) => {
     const chats = await storage.getAllChats();
     res.json(chats);
   });
 
-  app.post("/api/admin/users/:id/activate", requireAdmin, async (req, res) => {
+  app.post("/api/admin/users/:id/activate", requireAdmin, async (req: Request, res: Response) => {
     const userId = parseInt(req.params.id);
     const user = await storage.updateUser(userId, { isActive: true });
     await storage.createAdminLog(req.user!.id, "activate_user", { userId });
     res.json(user);
   });
 
-  app.post("/api/admin/users/:id/deactivate", requireAdmin, async (req, res) => {
+  app.post("/api/admin/users/:id/deactivate", requireAdmin, async (req: Request, res: Response) => {
     const userId = parseInt(req.params.id);
     const user = await storage.updateUser(userId, { isActive: false });
     await storage.createAdminLog(req.user!.id, "deactivate_user", { userId });
     res.json(user);
   });
 
-  app.post("/api/admin/users/:id/promote", requireAdmin, async (req, res) => {
+  app.post("/api/admin/users/:id/promote", requireAdmin, async (req: Request, res: Response) => {
     const userId = parseInt(req.params.id);
     const { role } = req.body;
     const user = await storage.updateUser(userId, { role });
@@ -106,7 +106,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(user);
   });
 
-  app.post("/api/admin/chats/:id/review", requireAdmin, async (req, res) => {
+  app.post("/api/admin/chats/:id/review", requireAdmin, async (req: Request, res: Response) => {
     const chatId = parseInt(req.params.id);
     const chat = await storage.reviewChat(chatId, {
       isReviewed: true,
@@ -118,7 +118,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(chat);
   });
 
-  app.post("/api/admin/chats/:id/flag", requireAdmin, async (req, res) => {
+  app.post("/api/admin/chats/:id/flag", requireAdmin, async (req: Request, res: Response) => {
     const chatId = parseInt(req.params.id);
     const { flagReason } = req.body;
     const chat = await storage.updateChat(chatId, {
@@ -129,7 +129,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(chat);
   });
 
-  app.post("/api/register", async (req, res, next) => {
+  app.post("/api/register", async (req: Request, res: Response, next: NextFunction) => {
     const existingUser = await storage.getUserByUsername(req.body.username);
     if (existingUser) {
       return res.status(400).send("El nombre de usuario ya existe");
@@ -147,7 +147,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
 
-  app.post("/api/create-subscription-session", async (req, res) => {
+  app.post("/api/create-subscription-session", async (req: Request, res: Response) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "No has iniciado sesión" });
     }
@@ -182,7 +182,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Webhook para eventos de Stripe
-  app.post("/api/webhook", async (req, res) => {
+  app.post("/api/webhook", async (req: Request, res: Response) => {
     const sig = req.headers["stripe-signature"];
 
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
@@ -193,7 +193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       event = stripe.webhooks.constructEvent(
-        req.rawBody,
+        req.rawBody!,
         sig as string,
         process.env.STRIPE_WEBHOOK_SECRET
       );

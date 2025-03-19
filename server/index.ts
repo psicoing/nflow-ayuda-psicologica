@@ -62,7 +62,7 @@ app.use((req, res, next) => {
     const message = err.message || "Error Interno del Servidor";
 
     res.status(status).json({ message });
-    throw err;
+    console.error(err); // Log the error for debugging
   });
 
   if (app.get("env") === "development") {
