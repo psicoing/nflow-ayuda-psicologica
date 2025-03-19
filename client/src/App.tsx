@@ -10,7 +10,8 @@ import AdminDashboard from "@/pages/admin/dashboard";
 import SecretAdminPage from "@/pages/secret-admin";
 import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "./lib/protected-route";
-import SubscriptionsPage from "@/pages/subscriptions"; // Added import
+import SubscriptionsPage from "@/pages/subscriptions";
+import ResourcesPage from "@/pages/resources";
 
 function Router() {
   return (
@@ -19,7 +20,8 @@ function Router() {
       <ProtectedRoute path="/chat" component={ChatPage} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
       <ProtectedRoute path="/admin-secret-panel" component={SecretAdminPage} />
-      <ProtectedRoute path="/subscriptions" component={SubscriptionsPage} /> // Added route
+      <ProtectedRoute path="/subscriptions" component={SubscriptionsPage} />
+      <ProtectedRoute path="/resources" component={ResourcesPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
