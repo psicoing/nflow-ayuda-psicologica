@@ -6,6 +6,7 @@ import { generateChatResponse } from "./openai";
 import { Message, UserRoles } from "@shared/schema";
 import { hashPassword } from "./utils";
 import cors from "cors";
+import { checkDatabaseConnection } from "./db";
 
 // Middleware para verificar rol de administrador
 const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
@@ -14,6 +15,18 @@ const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
     return res.status(403).json({ message: "No autorizado" });
   }
   next();
+};
+
+// Middleware para manejar errores de base de datos
+const handleDatabaseError = (error: any, req: Request, res: Response, next: NextFunction) => {
+  console.error('[API Error]', error);
+  if (error.code === '57P01') { // Código de error de Neon para desconexión administrativa
+    return res.status(503).json({
+      message: "Error temporal de base de datos, por favor intenta de nuevo",
+      retryAfter: 5
+    });
+  }
+  next(error);
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -28,10 +41,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   setupAuth(app);
 
+  // Verificar conexión a la base de datos periódicamente
+  setInterval(async () => {
+    const isConnected = await checkDatabaseConnection();
+    console.log('[Health Check] Database connection:', isConnected ? 'OK' : 'ERROR');
+  }, 30000);
+
   // Ruta de estado de la API
-  app.get("/api/health", (_req, res) => {
+  app.get("/api/health", async (_req, res) => {
+    const dbConnected = await checkDatabaseConnection();
     res.json({ 
-      status: "ok", 
+      status: dbConnected ? "ok" : "database_error", 
       timestamp: new Date().toISOString(),
       version: "1.0.0"
     });
@@ -162,6 +182,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+
+  // Middleware de manejo de errores
+  app.use(handleDatabaseError);
+
+  // Middleware de error general
+  app.use((error: any, _req: Request, res: Response, _next: NextFunction) => {
+    console.error('[API Error]', error);
+    res.status(500).json({
+      message: "Error interno del servidor",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  });
 
   const httpServer = createServer(app);
   return httpServer;
