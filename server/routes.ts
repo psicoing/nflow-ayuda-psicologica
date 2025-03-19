@@ -5,9 +5,10 @@ import { storage } from "./storage";
 import { generateChatResponse } from "./openai";
 import { Message, UserRoles } from "@shared/schema";
 import Stripe from "stripe";
+import { hashPassword } from "./utils"; // Assuming this function exists
 
 if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error("Missing STRIPE_SECRET_KEY");
+  throw new Error("Falta la clave secreta de Stripe");
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -128,9 +129,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(chat);
   });
 
+  app.post("/api/register", async (req, res, next) => {
+    const existingUser = await storage.getUserByUsername(req.body.username);
+    if (existingUser) {
+      return res.status(400).send("El nombre de usuario ya existe");
+    }
+
+    const user = await storage.createUser({
+      ...req.body,
+      password: await hashPassword(req.body.password),
+    });
+
+    req.login(user, (err) => {
+      if (err) return next(err);
+      res.status(201).json(user);
+    });
+  });
+
+
   app.post("/api/create-subscription-session", async (req, res) => {
     if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "No autenticado" });
+      return res.status(401).json({ message: "No has iniciado sesión" });
     }
 
     try {
@@ -150,10 +169,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ sessionUrl: session.url });
     } catch (error: any) {
-      console.error("Error creating subscription session:", error);
-      res.status(500).json({ 
+      console.error("Error al crear la sesión de suscripción:", error);
+      res.status(500).json({
         message: "Error al crear la sesión de suscripción",
-        error: error.message 
+        error: error.message
       });
     }
   });
@@ -163,7 +182,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const sig = req.headers["stripe-signature"];
 
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      return res.status(500).json({ message: "Missing STRIPE_WEBHOOK_SECRET" });
+      return res.status(500).json({ message: "Falta la clave secreta del webhook de Stripe" });
     }
 
     let event;
@@ -175,8 +194,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         process.env.STRIPE_WEBHOOK_SECRET
       );
     } catch (err: any) {
-      console.error("Error validating webhook:", err);
-      return res.status(400).json({ message: `Webhook Error: ${err.message}` });
+      console.error("Error al validar el webhook:", err);
+      return res.status(400).json({ message: `Error en el webhook: ${err.message}` });
     }
 
     try {
@@ -190,7 +209,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               stripeSubscriptionId: session.subscription as string,
               subscriptionStatus: "active",
               role: UserRoles.PROFESSIONAL,
-              questionCount: 0, // Reset question count for new subscribers
+              questionCount: 0,
             });
           }
           break;
@@ -210,8 +229,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ received: true });
     } catch (err: any) {
-      console.error("Error processing webhook event:", err);
-      res.status(500).json({ message: `Error processing webhook: ${err.message}` });
+      console.error("Error al procesar el evento del webhook:", err);
+      res.status(500).json({ message: `Error al procesar el webhook: ${err.message}` });
     }
   });
 

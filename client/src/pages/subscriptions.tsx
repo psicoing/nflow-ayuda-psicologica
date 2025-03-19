@@ -24,7 +24,7 @@ export default function SubscriptionsPage() {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: "No se pudo procesar tu suscripción. Por favor, inténtalo de nuevo.",
         variant: "destructive",
       });
     } finally {
