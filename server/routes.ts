@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { generateChatResponse } from "./openai";
 import { Message, UserRoles } from "@shared/schema";
 import { hashPassword } from "./utils";
+import cors from "cors";
 
 // Middleware para verificar rol de administrador
 const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
@@ -16,7 +17,18 @@ const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Configurar CORS para permitir peticiones desde otros dominios
+  app.use(cors({
+    origin: process.env.FRONTEND_URL || "*", // URL del frontend o permitir todos en desarrollo
+    credentials: true // Necesario para enviar cookies de sesión
+  }));
+
   setupAuth(app);
+
+  // Rutas de API
+  app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
 
   // Rutas existentes
   app.get("/api/chats", async (req: Request, res: Response) => {
