@@ -6,7 +6,14 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Lock, Unlock } from "lucide-react";
+import { 
+  Menu, 
+  Lock, 
+  Heart, 
+  CreditCard, 
+  LogOut,
+  Book
+} from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
@@ -57,8 +64,16 @@ export function HamburgerMenu() {
           </SheetHeader>
           <div className="flex flex-col gap-2 mt-4">
             <Link href="/resources">
-              <Button variant="ghost" className="w-full justify-start">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <Book className="h-4 w-4" />
                 Recursos de Salud Mental
+              </Button>
+            </Link>
+
+            <Link href="/subscriptions">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <CreditCard className="h-4 w-4" />
+                Suscripciones
               </Button>
             </Link>
 
@@ -71,19 +86,14 @@ export function HamburgerMenu() {
               Panel de Administración
             </Button>
 
-            <Link href="/subscriptions">
-              <Button variant="ghost" className="w-full justify-start">
-                Suscripciones
-              </Button>
-            </Link>
-
             <Button
               variant="ghost"
-              className="w-full justify-start text-destructive"
+              className="w-full justify-start gap-2 text-destructive"
               onClick={() => {
                 // Implementar lógica para dar de baja
               }}
             >
+              <LogOut className="h-4 w-4" />
               Darse de Baja
             </Button>
           </div>
