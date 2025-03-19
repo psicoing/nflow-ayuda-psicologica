@@ -40,7 +40,7 @@ export function HamburgerMenu() {
         title: "Acceso concedido",
         description: "Accediendo al panel de administración",
       });
-      setLocation("/admin");
+      window.location.href = "/admin"; // Cambiado de setLocation a window.location.href
     } else {
       toast({
         title: "Acceso denegado",
