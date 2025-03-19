@@ -4,23 +4,6 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
-// Configuración especial para webhooks de Stripe
-app.use((req, res, next) => {
-  if (req.path === '/api/webhook' && req.method === 'POST') {
-    let data = '';
-    req.setEncoding('utf8');
-    req.on('data', chunk => {
-      data += chunk;
-    });
-    req.on('end', () => {
-      req.rawBody = data;
-      next();
-    });
-  } else {
-    next();
-  }
-});
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

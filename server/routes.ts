@@ -4,16 +4,7 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { generateChatResponse } from "./openai";
 import { Message, UserRoles } from "@shared/schema";
-import Stripe from "stripe";
 import { hashPassword } from "./utils";
-
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error("Falta la clave secreta de Stripe");
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
-});
 
 // Middleware para verificar rol de administrador
 const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
@@ -146,97 +137,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-
-  app.post("/api/create-subscription-session", async (req: Request, res: Response) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "No has iniciado sesión" });
-    }
-
-    try {
-      if (!process.env.STRIPE_PRICE_ID) {
-        throw new Error("No se ha configurado STRIPE_PRICE_ID");
-      }
-
-      const session = await stripe.checkout.sessions.create({
-        mode: "subscription",
-        payment_method_types: ["card"],
-        line_items: [
-          {
-            price: process.env.STRIPE_PRICE_ID,
-            quantity: 1,
-          },
-        ],
-        success_url: `${req.protocol}://${req.get("host")}/chat?success=true&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.protocol}://${req.get("host")}/subscriptions?canceled=true`,
-        client_reference_id: req.user.id.toString(),
-      });
-
-      res.json({ sessionUrl: session.url });
-    } catch (error: any) {
-      console.error("Error al crear la sesión de suscripción:", error);
-      res.status(500).json({
-        message: "Error al crear la sesión de suscripción",
-        error: error.message
-      });
-    }
-  });
-
-  // Webhook para eventos de Stripe
-  app.post("/api/webhook", async (req: Request, res: Response) => {
-    const sig = req.headers["stripe-signature"];
-
-    if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      return res.status(500).json({ message: "Falta la clave secreta del webhook de Stripe" });
-    }
-
-    let event;
-
-    try {
-      event = stripe.webhooks.constructEvent(
-        req.rawBody!,
-        sig as string,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
-    } catch (err: any) {
-      console.error("Error al validar el webhook:", err);
-      return res.status(400).json({ message: `Error en el webhook: ${err.message}` });
-    }
-
-    try {
-      switch (event.type) {
-        case "checkout.session.completed": {
-          const session = event.data.object as Stripe.Checkout.Session;
-          if (session.client_reference_id) {
-            const userId = parseInt(session.client_reference_id);
-            await storage.updateUser(userId, {
-              stripeCustomerId: session.customer as string,
-              stripeSubscriptionId: session.subscription as string,
-              subscriptionStatus: "active",
-              role: UserRoles.PROFESSIONAL,
-              questionCount: 0,
-            });
-          }
-          break;
-        }
-        case "customer.subscription.deleted": {
-          const subscription = event.data.object as Stripe.Subscription;
-          const user = await storage.getUserByStripeCustomerId(subscription.customer as string);
-          if (user) {
-            await storage.updateUser(user.id, {
-              subscriptionStatus: "canceled",
-              role: UserRoles.USER,
-            });
-          }
-          break;
-        }
-      }
-
-      res.json({ received: true });
-    } catch (err: any) {
-      console.error("Error al procesar el evento del webhook:", err);
-      res.status(500).json({ message: `Error al procesar el webhook: ${err.message}` });
-    }
-  });
 
   const httpServer = createServer(app);
   return httpServer;
