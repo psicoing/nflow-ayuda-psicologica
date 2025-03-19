@@ -13,21 +13,21 @@ if (!process.env.DATABASE_URL) {
 
 // Configuración del pool de conexiones de Neon con reintentos
 const createPool = () => {
-  console.log("[Database] Creando pool de conexiones...");
+  console.log("[Database] Creando pool de conexiones para la aplicación de salud mental...");
   return new Pool({ 
     connectionString: process.env.DATABASE_URL,
     ssl: {
       rejectUnauthorized: false
     },
-    max: 20, // Máximo número de clientes
-    idleTimeoutMillis: 30000, // Tiempo máximo de inactividad
-    connectionTimeoutMillis: 2000, // Tiempo máximo para establecer conexión
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
   });
 };
 
 // Crear pool inicial
 export let pool = createPool();
-console.log("[Database] Pool inicial creado");
+console.log("[Database] Pool inicial creado para la aplicación de salud mental");
 
 // Manejar desconexiones y reconectar automáticamente
 pool.on('error', (err) => {
@@ -41,7 +41,7 @@ pool.on('error', (err) => {
 
 // Exportar instancia de Drizzle con el pool
 export const db = drizzle(pool, { schema });
-console.log("[Database] ORM Drizzle configurado");
+console.log("[Database] ORM Drizzle configurado para la aplicación de salud mental");
 
 // Función para verificar la conexión
 export async function checkDatabaseConnection() {

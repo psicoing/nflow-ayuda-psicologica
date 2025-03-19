@@ -23,14 +23,6 @@ export const chats = pgTable("chats", {
   flagReason: text("flag_reason"),
 });
 
-export const adminLogs = pgTable("admin_logs", {
-  id: serial("id").primaryKey(),
-  adminId: serial("admin_id").references(() => users.id),
-  action: text("action").notNull(),
-  details: jsonb("details").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
 export type Message = {
   role: "user" | "assistant";
   content: string;
@@ -39,12 +31,10 @@ export type Message = {
 
 export const insertUserSchema = createInsertSchema(users);
 export const insertChatSchema = createInsertSchema(chats);
-export const insertAdminLogSchema = createInsertSchema(adminLogs);
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Chat = typeof chats.$inferSelect;
-export type AdminLog = typeof adminLogs.$inferSelect;
 
 // Roles disponibles en el sistema
 export const UserRoles = {

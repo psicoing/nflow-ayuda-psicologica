@@ -1,4 +1,4 @@
-import { Message, User, InsertUser, Chat, users, chats, AdminLog, adminLogs } from "@shared/schema";
+import { Message, User, InsertUser, Chat, users, chats } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import session from "express-session";
@@ -25,7 +25,6 @@ export interface IStorage {
   getAllChats(): Promise<Chat[]>;
   updateUser(id: number, data: Partial<User>): Promise<User>;
   updateChat(id: number, data: Partial<Chat>): Promise<Chat>;
-  createAdminLog(adminId: number, action: string, details: any): Promise<AdminLog>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -208,24 +207,6 @@ export class DatabaseStorage implements IStorage {
       return chat;
     } catch (error) {
       console.error('Error en updateChat:', error);
-      throw error;
-    }
-  }
-
-  async createAdminLog(adminId: number, action: string, details: any): Promise<AdminLog> {
-    try {
-      const [log] = await db
-        .insert(adminLogs)
-        .values({
-          adminId,
-          action,
-          details,
-          createdAt: new Date(),
-        })
-        .returning();
-      return log;
-    } catch (error) {
-      console.error('Error en createAdminLog:', error);
       throw error;
     }
   }
