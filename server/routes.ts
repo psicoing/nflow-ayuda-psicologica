@@ -11,7 +11,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
+  apiVersion: "2025-02-24.acacia",
 });
 
 // Middleware para verificar rol de administrador
@@ -150,7 +150,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ sessionUrl: session.url });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      console.error("Error creating subscription session:", error);
+      res.status(500).json({ 
+        message: "Error al crear la sesión de suscripción",
+        error: error.message 
+      });
     }
   });
 
@@ -162,13 +166,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json({ message: "Missing STRIPE_WEBHOOK_SECRET" });
     }
 
+    let event;
+
     try {
-      const event = stripe.webhooks.constructEvent(
+      event = stripe.webhooks.constructEvent(
         req.body,
         sig as string,
         process.env.STRIPE_WEBHOOK_SECRET
       );
+    } catch (err: any) {
+      console.error("Error validating webhook:", err);
+      return res.status(400).json({ message: `Webhook Error: ${err.message}` });
+    }
 
+    try {
       switch (event.type) {
         case "checkout.session.completed": {
           const session = event.data.object as Stripe.Checkout.Session;
@@ -178,7 +189,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               stripeCustomerId: session.customer as string,
               stripeSubscriptionId: session.subscription as string,
               subscriptionStatus: "active",
-              role: "professional", // Actualizar el rol a professional
+              role: UserRoles.PROFESSIONAL,
+              questionCount: 0, // Reset question count for new subscribers
             });
           }
           break;
@@ -189,7 +201,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (user) {
             await storage.updateUser(user.id, {
               subscriptionStatus: "canceled",
-              role: "user", // Volver al rol de usuario normal
+              role: UserRoles.USER,
             });
           }
           break;
@@ -197,8 +209,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       res.json({ received: true });
-    } catch (err) {
-      res.status(400).send(`Webhook Error: ${err.message}`);
+    } catch (err: any) {
+      console.error("Error processing webhook event:", err);
+      res.status(500).json({ message: `Error processing webhook: ${err.message}` });
     }
   });
 
