@@ -1,37 +1,9 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import { useState } from "react";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { Loader2, CheckCircle, MessageCircle, Shield } from "lucide-react";
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+import { MessageCircle, CheckCircle, Shield, Construction } from "lucide-react";
 
 export default function SubscriptionsPage() {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-
-  const handleSubscribe = async () => {
-    try {
-      setLoading(true);
-      const response = await apiRequest("POST", "/api/create-subscription-session");
-      const { sessionUrl } = await response.json();
-      window.location.href = sessionUrl;
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "No se pudo procesar tu suscripción. Por favor, inténtalo de nuevo.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted p-6">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -42,6 +14,10 @@ export default function SubscriptionsPage() {
           <p className="text-muted-foreground">
             Elige el plan que mejor se adapte a tus necesidades
           </p>
+          <div className="flex items-center justify-center gap-2 text-yellow-600 bg-yellow-100 p-3 rounded-lg">
+            <Construction className="h-5 w-5" />
+            <p>Sistema de suscripciones en construcción. Estará disponible próximamente.</p>
+          </div>
         </header>
 
         <div className="grid md:grid-cols-2 gap-6 mt-8">
@@ -95,15 +71,15 @@ export default function SubscriptionsPage() {
                 </li>
               </ul>
               <Button 
-                onClick={handleSubscribe} 
-                disabled={loading} 
+                disabled
                 className="w-full"
+                variant="secondary"
               >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : null}
-                Suscribirse Ahora
+                Próximamente
               </Button>
+              <p className="text-sm text-center text-muted-foreground">
+                El sistema de suscripciones estará disponible pronto
+              </p>
             </CardContent>
           </Card>
         </div>
