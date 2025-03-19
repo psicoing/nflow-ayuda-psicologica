@@ -16,6 +16,11 @@ const languages = [
 export function LanguageSelector() {
   const { i18n } = useTranslation();
 
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+    localStorage.setItem('i18nextLng', lng);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -23,7 +28,7 @@ export function LanguageSelector() {
           <Globe className="h-5 w-5" />
           <span className="sr-only">Seleccionar idioma</span>
           <div className="absolute -bottom-1 -right-1 text-xs font-medium">
-            {i18n.language.toUpperCase()}
+            {i18n.language.substring(0, 2).toUpperCase()}
           </div>
         </Button>
       </DropdownMenuTrigger>
@@ -31,7 +36,7 @@ export function LanguageSelector() {
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
-            onClick={() => i18n.changeLanguage(lang.code)}
+            onClick={() => changeLanguage(lang.code)}
             className="cursor-pointer"
           >
             {lang.name}

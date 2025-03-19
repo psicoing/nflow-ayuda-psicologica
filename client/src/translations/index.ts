@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
 const resources = {
   es: {
@@ -59,24 +60,20 @@ const resources = {
   }
 };
 
-// Inicializar i18n antes de que la aplicación se monte
 i18n
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
-    lng: "es", // idioma por defecto
     fallbackLng: "es",
+    lng: "es", // idioma por defecto
     interpolation: {
       escapeValue: false
     },
-    load: 'languageOnly',
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
     }
   });
-
-// Forzar el idioma español
-i18n.changeLanguage('es');
 
 export default i18n;
