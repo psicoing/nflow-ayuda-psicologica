@@ -1,6 +1,6 @@
 import { Message, User, InsertUser, Chat, users, chats, AdminLog, adminLogs } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, isNull } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { pool } from "./db";
@@ -10,7 +10,6 @@ const PostgresSessionStore = connectPg(session);
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
-  getUserByStripeCustomerId(stripeCustomerId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   getChatHistory(userId: number): Promise<Chat[]>;
   saveChat(userId: number, messages: Message[]): Promise<Chat>;
@@ -40,83 +39,102 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db
-      .select({
-        id: users.id,
-        username: users.username,
-        password: users.password,
-        role: users.role,
-        isActive: users.is_active,
-        createdAt: users.created_at
-      })
-      .from(users)
-      .where(eq(users.id, id));
-    return user;
+    try {
+      const [user] = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          password: users.password,
+          role: users.role,
+          isActive: users.isActive,
+          createdAt: users.createdAt,
+        })
+        .from(users)
+        .where(eq(users.id, id));
+      return user;
+    } catch (error) {
+      console.error('Error en getUser:', error);
+      throw error;
+    }
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db
-      .select({
-        id: users.id,
-        username: users.username,
-        password: users.password,
-        role: users.role,
-        isActive: users.is_active,
-        createdAt: users.created_at
-      })
-      .from(users)
-      .where(eq(users.username, username));
-    return user;
-  }
-
-  async getUserByStripeCustomerId(stripeCustomerId: string): Promise<User | undefined> {
-    const [user] = await db
-      .select({
-        id: users.id,
-        username: users.username,
-        password: users.password,
-        role: users.role,
-        isActive: users.is_active,
-        createdAt: users.created_at
-      })
-      .from(users)
-      .where(eq(users.stripeCustomerId, stripeCustomerId));
-    return user;
+    try {
+      const [user] = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          password: users.password,
+          role: users.role,
+          isActive: users.isActive,
+          createdAt: users.createdAt,
+        })
+        .from(users)
+        .where(eq(users.username, username));
+      return user;
+    } catch (error) {
+      console.error('Error en getUserByUsername:', error);
+      throw error;
+    }
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(insertUser)
-      .returning();
-    return user;
+    try {
+      const [user] = await db
+        .insert(users)
+        .values({
+          ...insertUser,
+          isActive: true,
+          createdAt: new Date(),
+        })
+        .returning();
+      return user;
+    } catch (error) {
+      console.error('Error en createUser:', error);
+      throw error;
+    }
   }
 
   async getChatHistory(userId: number): Promise<Chat[]> {
-    return db
-      .select()
-      .from(chats)
-      .where(eq(chats.userId, userId));
+    try {
+      return db
+        .select()
+        .from(chats)
+        .where(eq(chats.userId, userId));
+    } catch (error) {
+      console.error('Error en getChatHistory:', error);
+      throw error;
+    }
   }
 
   async saveChat(userId: number, messages: Message[]): Promise<Chat> {
-    const [chat] = await db
-      .insert(chats)
-      .values({
-        userId,
-        messages,
-        createdAt: new Date(),
-      })
-      .returning();
-    return chat;
+    try {
+      const [chat] = await db
+        .insert(chats)
+        .values({
+          userId,
+          messages,
+          createdAt: new Date(),
+        })
+        .returning();
+      return chat;
+    } catch (error) {
+      console.error('Error en saveChat:', error);
+      throw error;
+    }
   }
 
   async getUnreviewedChats(): Promise<Chat[]> {
-    return db
-      .select()
-      .from(chats)
-      .where(eq(chats.isReviewed, false))
-      .orderBy(chats.createdAt);
+    try {
+      return db
+        .select()
+        .from(chats)
+        .where(eq(chats.isReviewed, false))
+        .orderBy(chats.createdAt);
+    } catch (error) {
+      console.error('Error en getUnreviewedChats:', error);
+      throw error;
+    }
   }
 
   async reviewChat(chatId: number, review: {
@@ -125,61 +143,91 @@ export class DatabaseStorage implements IStorage {
     reviewedBy: number;
     reviewNotes?: string;
   }): Promise<Chat> {
-    const [updatedChat] = await db
-      .update(chats)
-      .set(review)
-      .where(eq(chats.id, chatId))
-      .returning();
-    return updatedChat;
+    try {
+      const [updatedChat] = await db
+        .update(chats)
+        .set(review)
+        .where(eq(chats.id, chatId))
+        .returning();
+      return updatedChat;
+    } catch (error) {
+      console.error('Error en reviewChat:', error);
+      throw error;
+    }
   }
 
   async getAllUsers(): Promise<User[]> {
-    return db
-      .select({
-        id: users.id,
-        username: users.username,
-        password: users.password,
-        role: users.role,
-        isActive: users.is_active,
-        createdAt: users.created_at
-      })
-      .from(users)
-      .orderBy(users.created_at);
+    try {
+      return db
+        .select({
+          id: users.id,
+          username: users.username,
+          password: users.password,
+          role: users.role,
+          isActive: users.isActive,
+          createdAt: users.createdAt,
+        })
+        .from(users)
+        .orderBy(users.createdAt);
+    } catch (error) {
+      console.error('Error en getAllUsers:', error);
+      throw error;
+    }
   }
 
   async getAllChats(): Promise<Chat[]> {
-    return db.select().from(chats).orderBy(chats.createdAt);
+    try {
+      return db.select().from(chats).orderBy(chats.createdAt);
+    } catch (error) {
+      console.error('Error en getAllChats:', error);
+      throw error;
+    }
   }
 
   async updateUser(id: number, data: Partial<User>): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set(data)
-      .where(eq(users.id, id))
-      .returning();
-    return user;
+    try {
+      const [user] = await db
+        .update(users)
+        .set(data)
+        .where(eq(users.id, id))
+        .returning();
+      return user;
+    } catch (error) {
+      console.error('Error en updateUser:', error);
+      throw error;
+    }
   }
 
   async updateChat(id: number, data: Partial<Chat>): Promise<Chat> {
-    const [chat] = await db
-      .update(chats)
-      .set(data)
-      .where(eq(chats.id, id))
-      .returning();
-    return chat;
+    try {
+      const [chat] = await db
+        .update(chats)
+        .set(data)
+        .where(eq(chats.id, id))
+        .returning();
+      return chat;
+    } catch (error) {
+      console.error('Error en updateChat:', error);
+      throw error;
+    }
   }
 
   async createAdminLog(adminId: number, action: string, details: any): Promise<AdminLog> {
-    const [log] = await db
-      .insert(adminLogs)
-      .values({
-        adminId,
-        action,
-        details,
-        createdAt: new Date(),
-      })
-      .returning();
-    return log;
+    try {
+      const [log] = await db
+        .insert(adminLogs)
+        .values({
+          adminId,
+          action,
+          details,
+          createdAt: new Date(),
+        })
+        .returning();
+      return log;
+    } catch (error) {
+      console.error('Error en createAdminLog:', error);
+      throw error;
+    }
   }
 }
 
