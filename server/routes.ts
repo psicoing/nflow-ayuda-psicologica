@@ -5,14 +5,14 @@ import { storage } from "./storage";
 import { generateChatResponse } from "./openai";
 import { Message, UserRoles } from "@shared/schema";
 import Stripe from "stripe";
-import { hashPassword } from "./utils"; // Assuming this function exists
+import { hashPassword } from "./utils";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error("Falta la clave secreta de Stripe");
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-02-24.acacia",
+  apiVersion: "2023-10-16",
 });
 
 // Middleware para verificar rol de administrador
@@ -162,9 +162,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             quantity: 1,
           },
         ],
-        success_url: `${req.protocol}://${req.get("host")}/chat?success=true`,
+        success_url: `${req.protocol}://${req.get("host")}/chat?success=true&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${req.protocol}://${req.get("host")}/subscriptions?canceled=true`,
-        client_reference_id: req.user!.id.toString(),
+        customer_email: req.user.email,
+        client_reference_id: req.user.id.toString(),
       });
 
       res.json({ sessionUrl: session.url });
@@ -177,7 +178,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Webhook para manejar eventos de Stripe
+  // Webhook para eventos de Stripe
   app.post("/api/webhook", async (req, res) => {
     const sig = req.headers["stripe-signature"];
 
@@ -189,7 +190,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       event = stripe.webhooks.constructEvent(
-        req.body,
+        req.rawBody, 
         sig as string,
         process.env.STRIPE_WEBHOOK_SECRET
       );
@@ -233,7 +234,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: `Error al procesar el webhook: ${err.message}` });
     }
   });
-
 
   const httpServer = createServer(app);
   return httpServer;
