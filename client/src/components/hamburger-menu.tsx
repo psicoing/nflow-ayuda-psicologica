@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
 const ADMIN_PASSWORD = "nF#9mK$pL2@vX7"; // Esta contraseña debería moverse a una variable de entorno
+const ADMIN_PANEL_URL = "https://admin-space-pro-rmportbou.replit.app/auth";
 
 export function HamburgerMenu() {
   const { user } = useAuth();
@@ -40,7 +41,8 @@ export function HamburgerMenu() {
         title: "Acceso concedido",
         description: "Accediendo al panel de administración",
       });
-      window.location.href = "/admin"; // Cambiado de setLocation a window.location.href
+      // Redirigir al panel de administración externo
+      window.location.href = ADMIN_PANEL_URL;
     } else {
       toast({
         title: "Acceso denegado",
