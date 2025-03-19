@@ -17,20 +17,66 @@ const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Configurar CORS para permitir peticiones desde otros dominios
+  // Configurar CORS para permitir peticiones desde el panel de administración
   app.use(cors({
-    origin: process.env.FRONTEND_URL || "*", // URL del frontend o permitir todos en desarrollo
-    credentials: true // Necesario para enviar cookies de sesión
+    origin: [
+      'https://admin-space-pro-rmportbou.replit.app',
+      process.env.FRONTEND_URL || "*"
+    ],
+    credentials: true
   }));
 
   setupAuth(app);
 
-  // Rutas de API
+  // Ruta de estado de la API
   app.get("/api/health", (_req, res) => {
-    res.json({ status: "ok", timestamp: new Date().toISOString() });
+    res.json({ 
+      status: "ok", 
+      timestamp: new Date().toISOString(),
+      version: "1.0.0"
+    });
   });
 
-  // Rutas existentes
+  // Rutas de administración
+  app.get("/api/admin/users", requireAdmin, async (_req: Request, res: Response) => {
+    const users = await storage.getAllUsers();
+    res.json(users);
+  });
+
+  app.get("/api/admin/chats", requireAdmin, async (_req: Request, res: Response) => {
+    const chats = await storage.getAllChats();
+    res.json(chats);
+  });
+
+  app.post("/api/admin/users/:id/activate", requireAdmin, async (req: Request, res: Response) => {
+    const userId = parseInt(req.params.id);
+    const user = await storage.updateUser(userId, { isActive: true });
+    await storage.createAdminLog(req.user!.id, "activate_user", { userId });
+    res.json(user);
+  });
+
+  app.post("/api/admin/users/:id/deactivate", requireAdmin, async (req: Request, res: Response) => {
+    const userId = parseInt(req.params.id);
+    const user = await storage.updateUser(userId, { isActive: false });
+    await storage.createAdminLog(req.user!.id, "deactivate_user", { userId });
+    res.json(user);
+  });
+
+  app.post("/api/admin/users/:id/promote", requireAdmin, async (req: Request, res: Response) => {
+    const userId = parseInt(req.params.id);
+    const { role } = req.body;
+    const user = await storage.updateUser(userId, { role });
+    await storage.createAdminLog(req.user!.id, "promote_user", { userId, role });
+    res.json(user);
+  });
+
+  // Ruta para obtener registros de actividad administrativa
+  app.get("/api/admin/activity-logs", requireAdmin, async (_req: Request, res: Response) => {
+    const logs = await storage.getAdminLogs();
+    res.json(logs);
+  });
+
+  // Rutas de API
   app.get("/api/chats", async (req: Request, res: Response) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "No autenticado" });
     const chats = await storage.getChatHistory(req.user!.id);
@@ -74,39 +120,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
-  });
-
-  // Rutas de administración
-  app.get("/api/admin/users", requireAdmin, async (_req: Request, res: Response) => {
-    const users = await storage.getAllUsers();
-    res.json(users);
-  });
-
-  app.get("/api/admin/chats", requireAdmin, async (_req: Request, res: Response) => {
-    const chats = await storage.getAllChats();
-    res.json(chats);
-  });
-
-  app.post("/api/admin/users/:id/activate", requireAdmin, async (req: Request, res: Response) => {
-    const userId = parseInt(req.params.id);
-    const user = await storage.updateUser(userId, { isActive: true });
-    await storage.createAdminLog(req.user!.id, "activate_user", { userId });
-    res.json(user);
-  });
-
-  app.post("/api/admin/users/:id/deactivate", requireAdmin, async (req: Request, res: Response) => {
-    const userId = parseInt(req.params.id);
-    const user = await storage.updateUser(userId, { isActive: false });
-    await storage.createAdminLog(req.user!.id, "deactivate_user", { userId });
-    res.json(user);
-  });
-
-  app.post("/api/admin/users/:id/promote", requireAdmin, async (req: Request, res: Response) => {
-    const userId = parseInt(req.params.id);
-    const { role } = req.body;
-    const user = await storage.updateUser(userId, { role });
-    await storage.createAdminLog(req.user!.id, "promote_user", { userId, role });
-    res.json(user);
   });
 
   app.post("/api/admin/chats/:id/review", requireAdmin, async (req: Request, res: Response) => {
