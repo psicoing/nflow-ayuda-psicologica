@@ -12,11 +12,13 @@ import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "./lib/protected-route";
 import SubscriptionsPage from "@/pages/subscriptions";
 import ResourcesPage from "@/pages/resources";
+import AboutPage from "@/pages/about";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={AuthPage} />
+      <Route path="/about" component={AboutPage} />
       <ProtectedRoute path="/dashboard" component={HomePage} />
       <ProtectedRoute path="/chat" component={ChatPage} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
