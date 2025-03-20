@@ -21,7 +21,7 @@ export default function HomePage() {
   });
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-background to-muted">
+    <div className="min-h-screen flex flex-col sm:flex-row bg-gradient-to-br from-background to-muted">
       <div className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader>
@@ -108,7 +108,7 @@ export default function HomePage() {
         </Card>
       </div>
 
-      <div className="hidden lg:flex flex-1 items-center justify-center bg-primary/5 p-8">
+      <div className="flex-1 flex items-center justify-center bg-primary/5 p-8">
         <div className="max-w-md space-y-6">
           <h2 className="text-4xl font-bold text-primary">
             Tu Espacio Seguro para el Bienestar Mental
