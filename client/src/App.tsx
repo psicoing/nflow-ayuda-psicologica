@@ -16,13 +16,13 @@ import ResourcesPage from "@/pages/resources";
 function Router() {
   return (
     <Switch>
+      <Route path="/auth" component={AuthPage} />
       <ProtectedRoute path="/" component={HomePage} />
       <ProtectedRoute path="/chat" component={ChatPage} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
       <ProtectedRoute path="/admin-secret-panel" component={SecretAdminPage} />
       <ProtectedRoute path="/subscriptions" component={SubscriptionsPage} />
       <ProtectedRoute path="/resources" component={ResourcesPage} />
-      <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
   );

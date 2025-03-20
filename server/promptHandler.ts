@@ -1,4 +1,9 @@
 import { Message } from "@shared/schema";
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
 const BASE_PROMPT = `Eres un asistente especializado en Psicología Clínica y Escolar. Todas tus respuestas deben estar basadas en modelos teóricos reconocidos, literatura científica actual y guías diagnósticas como el DSM-5-TR y la CIE-11.
 
@@ -25,38 +30,23 @@ export interface ChatResponse {
 }
 
 export async function processUserMessage(userMessage: string, history: Message[]): Promise<ChatResponse> {
-  // Construir el prompt completo con el historial de mensajes
-  const promptWithHistory = `${BASE_PROMPT}\n\nHistorial de la conversación:\n${
-    history.map(msg => `${msg.role}: ${msg.content}`).join('\n')
-  }\n\nUsuario: ${userMessage}\nAsistente:`;
-
   try {
-    // Hacer la llamada a la API de OpenAI
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: "gpt-4",
-        messages: [
-          { role: "system", content: BASE_PROMPT },
-          ...history.map(msg => ({
-            role: msg.role,
-            content: msg.content
-          })),
-          { role: "user", content: userMessage }
-        ],
-        temperature: 0.7
-      })
+    const response = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        { role: "system", content: BASE_PROMPT },
+        ...history.map(msg => ({
+          role: msg.role,
+          content: msg.content
+        } as OpenAI.Chat.ChatCompletionMessage)),
+        { role: "user", content: userMessage }
+      ],
+      temperature: 0.7
     });
 
-    const data = await response.json();
-    
     return {
       role: "assistant",
-      content: data.choices[0].message.content,
+      content: response.choices[0].message.content || "Lo siento, no pude procesar tu consulta.",
       timestamp: new Date()
     };
   } catch (error) {

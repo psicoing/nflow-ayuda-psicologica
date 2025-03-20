@@ -41,7 +41,9 @@ export function setupAuth(app: Express) {
     cookie: {
       secure: process.env.NODE_ENV === 'production',
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
-      sameSite: 'lax'
+      sameSite: 'lax',
+      httpOnly: true,
+      path: '/'
     }
   };
 
@@ -92,17 +94,38 @@ export function setupAuth(app: Express) {
     }
   });
 
-  // Middleware para verificar autenticación
-  const requireAuth = (req: Request, res: Response, next: NextFunction) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "No autenticado" });
-    }
-    next();
-  };
+  app.post("/api/register", async (req, res, next) => {
+    try {
+      const existingUser = await storage.getUserByUsername(req.body.username);
+      if (existingUser) {
+        return res.status(400).send("El nombre de usuario ya existe");
+      }
 
-  // Rutas de autenticación
-  app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    res.json(req.user);
+      const user = await storage.createUser({
+        ...req.body,
+        password: await hashPassword(req.body.password),
+      });
+
+      req.login(user, (err) => {
+        if (err) return next(err);
+        res.status(201).json(user);
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/login", (req, res, next) => {
+    passport.authenticate("local", (err, user, info) => {
+      if (err) return next(err);
+      if (!user) {
+        return res.status(401).json({ message: info.message || "Error de autenticación" });
+      }
+      req.logIn(user, (err) => {
+        if (err) return next(err);
+        res.json(user);
+      });
+    })(req, res, next);
   });
 
   app.post("/api/logout", (req, res, next) => {
@@ -112,28 +135,10 @@ export function setupAuth(app: Express) {
     });
   });
 
-  app.get("/api/user", requireAuth, (req, res) => {
+  app.get("/api/user", (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "No autenticado" });
+    }
     res.json(req.user);
-  });
-
-  // Proteger rutas del chat
-  app.get("/api/chats", requireAuth, async (req, res) => {
-    try {
-      const chats = await storage.getUserChats(req.user!.id);
-      res.json(chats);
-    } catch (error) {
-      console.error('Error al obtener chats:', error);
-      res.status(500).json({ message: "Error interno del servidor" });
-    }
-  });
-
-  app.post("/api/chat", requireAuth, async (req, res) => {
-    try {
-      const chat = await storage.createChat(req.user!.id, req.body);
-      res.json(chat);
-    } catch (error) {
-      console.error('Error al crear chat:', error);
-      res.status(500).json({ message: "Error interno del servidor" });
-    }
   });
 }

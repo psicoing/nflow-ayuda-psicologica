@@ -2,11 +2,10 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Message } from "@shared/schema";
-import { ArrowLeft, Send, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link, Redirect } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { ChatInterface } from "@/components/chat-interface";
@@ -21,7 +20,7 @@ export default function ChatPage() {
     return <Redirect to="/auth" />;
   }
 
-  const { data: chats, isLoading: isLoadingChats } = useQuery({
+  const { data: chats} = useQuery({
     queryKey: ["/api/chats"],
   });
 
@@ -31,11 +30,6 @@ export default function ChatPage() {
         message,
         history: currentHistory,
       });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message);
-      }
 
       return res.json();
     },
