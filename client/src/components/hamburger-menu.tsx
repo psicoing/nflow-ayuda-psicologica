@@ -14,7 +14,12 @@ import {
   LogOut,
   Book,
   Headset,
-  GraduationCap
+  GraduationCap,
+  Users,
+  Building2,
+  PersonStanding,
+  Globe,
+  Info
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
@@ -66,10 +71,31 @@ export function HamburgerMenu() {
             <SheetTitle className="text-left">Menú</SheetTitle>
           </SheetHeader>
           <div className="flex flex-col gap-2 mt-4">
-            <Link href="/resources">
+            <Link href="/about">
               <Button variant="ghost" className="w-full justify-start gap-2">
-                <Book className="h-4 w-4" />
-                Recursos de Salud Mental
+                <Info className="h-4 w-4" />
+                Quienes somos
+              </Button>
+            </Link>
+
+            <Link href="/services/personal">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <PersonStanding className="h-4 w-4" />
+                Servicios Personas
+              </Button>
+            </Link>
+
+            <Link href="/services/business">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <Building2 className="h-4 w-4" />
+                Servicios Empresas
+              </Button>
+            </Link>
+
+            <Link href="/language">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <Globe className="h-4 w-4" />
+                Idiomas
               </Button>
             </Link>
 
@@ -77,6 +103,13 @@ export function HamburgerMenu() {
               <Button variant="ghost" className="w-full justify-start gap-2">
                 <CreditCard className="h-4 w-4" />
                 Suscripciones
+              </Button>
+            </Link>
+
+            <Link href="/resources">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <Book className="h-4 w-4" />
+                Recursos de Salud Mental
               </Button>
             </Link>
 
