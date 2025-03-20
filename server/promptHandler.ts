@@ -35,9 +35,6 @@ export interface ChatResponse {
 
 export async function processUserMessage(userMessage: string, history: Message[]): Promise<ChatResponse> {
   try {
-    console.log('Procesando mensaje del usuario:', userMessage);
-    console.log('Historial de mensajes:', history);
-
     // Validar entrada
     if (!userMessage.trim()) {
       throw new Error('El mensaje no puede estar vacío');
@@ -45,16 +42,16 @@ export async function processUserMessage(userMessage: string, history: Message[]
 
     // Preparar mensajes para OpenAI
     const messages = [
-      { role: "system", content: BASE_PROMPT },
+      { role: "system" as const, content: BASE_PROMPT },
       ...history.map(msg => ({
         role: msg.role as OpenAI.Chat.ChatCompletionRole,
         content: msg.content
       })),
-      { role: "user", content: userMessage }
+      { role: "user" as const, content: userMessage }
     ];
 
     console.log('Enviando solicitud a OpenAI...');
-    const response = await openai.chat.completions.create({
+    const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages,
       temperature: 0.7,
@@ -63,31 +60,28 @@ export async function processUserMessage(userMessage: string, history: Message[]
 
     console.log('Respuesta recibida de OpenAI');
 
-    const assistantResponse = response.choices[0]?.message?.content;
-    if (!assistantResponse) {
+    if (!completion.choices[0]?.message?.content) {
       throw new Error('No se recibió respuesta del asistente');
     }
 
     return {
       role: "assistant",
-      content: assistantResponse,
+      content: completion.choices[0].message.content,
       timestamp: new Date()
     };
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error en processUserMessage:', error);
 
-    // Manejar errores específicos de OpenAI
     if (error instanceof OpenAI.APIError) {
       console.error('Error de API de OpenAI:', {
         type: error.type,
         message: error.message,
         status: error.status
       });
-      throw new Error('Error al procesar la consulta con el asistente: ' + error.message);
+      throw new Error(`Error al procesar la consulta con el asistente: ${error.message}`);
     }
 
-    // Manejar otros errores
-    throw new Error('Error al procesar la consulta psicológica: ' + error.message);
+    throw new Error('Error al procesar la consulta psicológica: ' + (error as Error).message);
   }
 }
