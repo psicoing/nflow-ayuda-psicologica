@@ -14,6 +14,7 @@ interface ChatInterfaceProps {
   onSendMessage: (message: string) => void;
   isLoading: boolean;
   user: any;
+  remainingMessages: number | null;
 }
 
 export function ChatInterface({
@@ -21,6 +22,7 @@ export function ChatInterface({
   onSendMessage,
   isLoading,
   user,
+  remainingMessages,
 }: ChatInterfaceProps) {
   const [input, setInput] = useState("");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -42,26 +44,23 @@ export function ChatInterface({
     inputRef.current?.focus();
   };
 
-  // Calcular mensajes restantes solo para usuarios normales
-  const remainingMessages = user?.role === "user" ? 3 - (user?.messageCount || 0) : null;
-
   return (
     <div className="flex flex-col h-full">
-      {user?.role === "user" && (
+      {user?.role === "user" && typeof remainingMessages === 'number' && (
         <div className="p-4 border-b">
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">
-              Plan gratuito: {remainingMessages} mensajes restantes
+              Plan gratuito: {remainingMessages} {remainingMessages === 1 ? 'mensaje restante' : 'mensajes restantes'}
             </span>
             <Button variant="outline" size="sm" asChild>
               <a href="/subscriptions">Actualizar plan</a>
             </Button>
           </div>
-          {remainingMessages && remainingMessages <= 1 && (
+          {remainingMessages <= 1 && remainingMessages >= 0 && (
             <Alert className="mt-2">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                Te quedan {remainingMessages} {remainingMessages === 1 ? 'mensaje gratuito' : 'mensajes gratuitos'}. 
+                Te {remainingMessages === 0 ? 'has quedado sin' : 'queda 1'} mensaje{remainingMessages === 1 ? '' : 's'} gratuito{remainingMessages === 1 ? '' : 's'}. 
                 Considera actualizar a un plan premium para continuar la conversación.
               </AlertDescription>
             </Alert>
@@ -145,12 +144,12 @@ export function ChatInterface({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={t('chat.typeMessage')}
-          disabled={isLoading || (user?.role === "user" && remainingMessages <= 0)}
+          disabled={isLoading || (user?.role === "user" && remainingMessages === 0)}
           className="flex-1"
         />
         <Button
           type="submit"
-          disabled={!input.trim() || isLoading || (user?.role === "user" && remainingMessages <= 0)}
+          disabled={!input.trim() || isLoading || (user?.role === "user" && remainingMessages === 0)}
           className="shrink-0"
         >
           {isLoading ? (

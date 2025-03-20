@@ -15,6 +15,7 @@ export default function ChatPage() {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [currentHistory, setCurrentHistory] = useState<Message[]>([]);
+  const [remainingMessages, setRemainingMessages] = useState<number | null>(null);
 
   if (authLoading) {
     return <div>Cargando...</div>;
@@ -46,6 +47,7 @@ export default function ChatPage() {
         return;
       }
       setCurrentHistory(data.messages);
+      setRemainingMessages(data.remainingMessages);
       queryClient.invalidateQueries({ queryKey: ["/api/chats"] });
     },
     onError: (error: Error) => {
@@ -89,6 +91,7 @@ export default function ChatPage() {
             onSendMessage={handleSubmit}
             isLoading={chatMutation.isPending}
             user={user}
+            remainingMessages={remainingMessages}
           />
         </Card>
       </div>
