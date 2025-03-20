@@ -88,7 +88,7 @@ export function HamburgerMenu() {
               </Button>
             </Link>
 
-            <Link href="https://instituto.neuronmeg.com" target="_blank">
+            <Link href="https://empordajobs.empleactiva.com/contenido/ins-neuronmeg-1" target="_blank">
               <Button variant="ghost" className="w-full justify-start gap-2">
                 <GraduationCap className="h-4 w-4" />
                 Instituto NeuronMeg
