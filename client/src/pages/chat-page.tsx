@@ -8,15 +8,20 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Message } from "@shared/schema";
 import { format } from "date-fns";
 import { ArrowLeft, Send, Loader2 } from "lucide-react";
-import { Link } from "wouter";
+import { Link, Redirect } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { ChatInterface } from "@/components/chat-interface"; // Changed import statement
+import { ChatInterface } from "@/components/chat-interface";
 
 export default function ChatPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [message, setMessage] = useState("");
   const [currentHistory, setCurrentHistory] = useState<Message[]>([]);
+
+  // Redirigir si no hay usuario autenticado
+  if (!user) {
+    return <Redirect to="/auth" />;
+  }
 
   const { data: chats, isLoading: isLoadingChats } = useQuery({
     queryKey: ["/api/chats"],
