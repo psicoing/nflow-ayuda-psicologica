@@ -11,15 +11,11 @@ import { useToast } from "@/hooks/use-toast";
 import { ChatInterface } from "@/components/chat-interface";
 
 export default function ChatPage() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [currentHistory, setCurrentHistory] = useState<Message[]>([]);
-  const [remainingMessages, setRemainingMessages] = useState<number | null>(null);
-
-  if (authLoading) {
-    return <div>Cargando...</div>;
-  }
+  const [remainingMessages, setRemainingMessages] = useState<number | null>(3);
 
   if (!user) {
     return <Redirect to="/auth" />;

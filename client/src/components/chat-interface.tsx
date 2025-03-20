@@ -8,6 +8,7 @@ import { Send, Loader2, Bot, User, AlertCircle, Info } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTranslation } from "react-i18next";
+import { Link } from "wouter";
 
 interface ChatInterfaceProps {
   messages: Message[];
@@ -46,17 +47,17 @@ export function ChatInterface({
 
   return (
     <div className="flex flex-col h-full">
-      {user?.role === "user" && typeof remainingMessages === 'number' && (
+      {user?.role === "user" && remainingMessages !== null && (
         <div className="p-4 border-b">
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">
               Plan gratuito: {remainingMessages} {remainingMessages === 1 ? 'mensaje restante' : 'mensajes restantes'}
             </span>
             <Button variant="outline" size="sm" asChild>
-              <a href="/subscriptions">Actualizar plan</a>
+              <Link href="/subscriptions">Actualizar plan</Link>
             </Button>
           </div>
-          {remainingMessages <= 1 && remainingMessages >= 0 && (
+          {remainingMessages <= 1 && (
             <Alert className="mt-2">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
@@ -68,10 +69,7 @@ export function ChatInterface({
         </div>
       )}
 
-      <ScrollArea
-        ref={scrollAreaRef}
-        className="flex-1 p-4 space-y-4"
-      >
+      <ScrollArea ref={scrollAreaRef} className="flex-1 p-4 space-y-4">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full space-y-4 text-center text-muted-foreground">
             <Bot className="h-12 w-12" />
