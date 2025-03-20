@@ -31,45 +31,45 @@ export default function HomePage() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent>
+              <SheetContent side="right">
                 <SheetHeader>
                   <SheetTitle className="text-left">Menú</SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-2 mt-4">
-                  <Link href="/about">
-                    <Button variant="ghost" className="w-full justify-start gap-2">
+                  <Button variant="ghost" className="w-full justify-start gap-2" asChild>
+                    <Link href="/about">
                       <Info className="h-4 w-4" />
                       Quienes somos
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
 
-                  <Link href="/services/personal">
-                    <Button variant="ghost" className="w-full justify-start gap-2">
+                  <Button variant="ghost" className="w-full justify-start gap-2" asChild>
+                    <Link href="/services/personal">
                       <PersonStanding className="h-4 w-4" />
                       Servicios Personas
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
 
-                  <Link href="/services/business">
-                    <Button variant="ghost" className="w-full justify-start gap-2">
+                  <Button variant="ghost" className="w-full justify-start gap-2" asChild>
+                    <Link href="/services/business">
                       <Building2 className="h-4 w-4" />
                       Servicios Empresas
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
 
-                  <Link href="/language">
-                    <Button variant="ghost" className="w-full justify-start gap-2">
+                  <Button variant="ghost" className="w-full justify-start gap-2" asChild>
+                    <Link href="/language">
                       <Globe className="h-4 w-4" />
                       Idiomas
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
 
-                  <Link href="/subscriptions">
-                    <Button variant="ghost" className="w-full justify-start gap-2">
+                  <Button variant="ghost" className="w-full justify-start gap-2" asChild>
+                    <Link href="/subscriptions">
                       <CreditCard className="h-4 w-4" />
                       Suscripciones
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 </div>
               </SheetContent>
             </Sheet>
