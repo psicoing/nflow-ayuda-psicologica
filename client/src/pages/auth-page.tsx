@@ -31,7 +31,7 @@ export default function AuthPage() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-2xl text-center font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-              NFlow Mental Health Support
+              NFlow Soporte de Salud Mental
             </CardTitle>
           </CardHeader>
           <CardContent>
