@@ -7,10 +7,10 @@ import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "@/components/language-selector";
 import {
   Sheet,
+  SheetTrigger,
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 
 export default function HomePage() {
@@ -27,50 +27,50 @@ export default function HomePage() {
           <div className="flex items-center gap-2">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-5 w-5" />
+                <Button variant="outline" size="icon" className="h-10 w-10">
+                  <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right">
+              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <SheetHeader>
-                  <SheetTitle>Menú</SheetTitle>
+                  <SheetTitle>Menú Principal</SheetTitle>
                 </SheetHeader>
-                <div className="flex flex-col gap-2 mt-4">
+                <nav className="flex flex-col gap-4 mt-6">
                   <Button variant="ghost" className="w-full justify-start gap-2" asChild>
                     <Link href="/about">
-                      <Info className="h-4 w-4" />
+                      <Info className="h-5 w-5" />
                       Quienes somos
                     </Link>
                   </Button>
 
                   <Button variant="ghost" className="w-full justify-start gap-2" asChild>
                     <Link href="/services/personal">
-                      <PersonStanding className="h-4 w-4" />
+                      <PersonStanding className="h-5 w-5" />
                       Servicios Personas
                     </Link>
                   </Button>
 
                   <Button variant="ghost" className="w-full justify-start gap-2" asChild>
                     <Link href="/services/business">
-                      <Building2 className="h-4 w-4" />
+                      <Building2 className="h-5 w-5" />
                       Servicios Empresas
                     </Link>
                   </Button>
 
                   <Button variant="ghost" className="w-full justify-start gap-2" asChild>
                     <Link href="/language">
-                      <Globe className="h-4 w-4" />
+                      <Globe className="h-5 w-5" />
                       Idiomas
                     </Link>
                   </Button>
 
                   <Button variant="ghost" className="w-full justify-start gap-2" asChild>
                     <Link href="/subscriptions">
-                      <CreditCard className="h-4 w-4" />
+                      <CreditCard className="h-5 w-5" />
                       Suscripciones
                     </Link>
                   </Button>
-                </div>
+                </nav>
               </SheetContent>
             </Sheet>
             <LanguageSelector />
