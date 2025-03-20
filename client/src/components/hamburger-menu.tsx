@@ -12,7 +12,9 @@ import {
   Heart, 
   CreditCard, 
   LogOut,
-  Book
+  Book,
+  Headset,
+  GraduationCap
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
@@ -76,6 +78,20 @@ export function HamburgerMenu() {
               <Button variant="ghost" className="w-full justify-start gap-2">
                 <CreditCard className="h-4 w-4" />
                 Suscripciones
+              </Button>
+            </Link>
+
+            <Link href="/customer-support">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <Headset className="h-4 w-4" />
+                Atención Cliente
+              </Button>
+            </Link>
+
+            <Link href="https://instituto.neuronmeg.com" target="_blank">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <GraduationCap className="h-4 w-4" />
+                Instituto NeuronMeg
               </Button>
             </Link>
 
