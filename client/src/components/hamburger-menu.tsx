@@ -13,8 +13,16 @@ import {
   Building2, 
   Headset, 
   GraduationCap,
-  Lock
+  Lock,
+  Languages
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function HamburgerMenu() {
   return (
@@ -29,6 +37,22 @@ export function HamburgerMenu() {
           <SheetTitle>Menú Principal</SheetTitle>
         </SheetHeader>
         <nav className="flex flex-col gap-4 mt-6">
+          {/* Selector de idioma */}
+          <div className="flex items-center gap-2 px-2">
+            <Languages className="h-5 w-5" />
+            <Select>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Seleccionar idioma" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="es">Español (ES)</SelectItem>
+                <SelectItem value="en">English (EN)</SelectItem>
+                <SelectItem value="ca">Català (CA)</SelectItem>
+                <SelectItem value="fr">Français (FR)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <Button variant="ghost" className="w-full justify-start gap-2" asChild>
             <a href="/about">
               <Info className="h-5 w-5" />
