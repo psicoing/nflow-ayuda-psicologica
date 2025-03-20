@@ -11,33 +11,49 @@ import { useToast } from "@/hooks/use-toast";
 import { ChatInterface } from "@/components/chat-interface";
 
 export default function ChatPage() {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const [currentHistory, setCurrentHistory] = useState<Message[]>([]);
+
+  // Mostrar carga mientras se verifica la autenticación
+  if (authLoading) {
+    return <div>Cargando...</div>;
+  }
 
   // Redirigir si no hay usuario autenticado
   if (!user) {
     return <Redirect to="/auth" />;
   }
 
-  const { data: chats} = useQuery({
+  const { data: chats, isLoading: isLoadingChats } = useQuery({
     queryKey: ["/api/chats"],
+    queryFn: async () => {
+      try {
+        const response = await apiRequest("GET", "/api/chats");
+        return response.json();
+      } catch (error) {
+        console.error("Error fetching chats:", error);
+        return [];
+      }
+    },
   });
 
   const chatMutation = useMutation({
     mutationFn: async (message: string) => {
-      const res = await apiRequest("POST", "/api/chat", {
+      console.log("Enviando mensaje:", message);
+      const response = await apiRequest("POST", "/api/chat", {
         message,
         history: currentHistory,
       });
-
-      return res.json();
+      return response.json();
     },
     onSuccess: (data) => {
+      console.log("Respuesta recibida:", data);
       setCurrentHistory(data.messages);
       queryClient.invalidateQueries({ queryKey: ["/api/chats"] });
     },
     onError: (error: Error) => {
+      console.error("Error en el chat:", error);
       toast({
         title: "Error",
         description: error.message,
@@ -48,8 +64,16 @@ export default function ChatPage() {
 
   const handleSubmit = async (message: string) => {
     if (!message.trim() || chatMutation.isPending) return;
-    await chatMutation.mutateAsync(message);
+    try {
+      await chatMutation.mutateAsync(message);
+    } catch (error) {
+      console.error("Error al enviar mensaje:", error);
+    }
   };
+
+  if (isLoadingChats) {
+    return <div>Cargando chats...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted">

@@ -9,6 +9,7 @@ import express from 'express';
 
 // Middleware para verificar autenticación
 const requireAuth = (req: Request, res: Response, next: NextFunction) => {
+  console.log('Auth check:', req.isAuthenticated(), req.session);
   if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "No autenticado" });
   }
@@ -21,16 +22,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     origin: process.env.FRONTEND_URL || "http://localhost:3000",
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Set-Cookie']
   }));
 
   // Configurar el manejo de JSON y cookies
   app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
-  // Configurar autenticación
+  // Configurar autenticación - debe ir después de CORS y parsers
   setupAuth(app);
 
-  // Rutas de API
+  // Rutas de API protegidas
   app.get("/api/chats", requireAuth, async (req: Request, res: Response) => {
     try {
       console.log('Obteniendo historial de chats para usuario:', req.user!.id);
