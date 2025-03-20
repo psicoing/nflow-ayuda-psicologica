@@ -52,9 +52,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
+      let messageCount = 0;
       // Verificar contador de mensajes para usuarios gratuitos
       if (req.user!.role === "user") {
-        const messageCount = await storage.getMessageCount(req.user!.id);
+        messageCount = await storage.getMessageCount(req.user!.id);
         if (messageCount >= MAX_FREE_MESSAGES) {
           return res.status(403).json({
             message: "Has alcanzado el límite de mensajes gratuitos",
