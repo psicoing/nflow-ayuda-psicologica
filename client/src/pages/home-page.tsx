@@ -9,9 +9,9 @@ export default function HomePage() {
   const { user, logoutMutation } = useAuth();
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-background to-muted">
-      <div className="max-w-6xl mx-auto p-4 space-y-6 w-full">
-        <header className="flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div className="min-h-screen w-full bg-gradient-to-br from-background to-muted">
+      <div className="max-w-6xl mx-auto p-4 space-y-6">
+        <header className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent text-center sm:text-left">
             Bienvenido, {user?.username}
           </h1>
@@ -28,7 +28,7 @@ export default function HomePage() {
           </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-2 sm:px-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -55,10 +55,10 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-muted-foreground">
-                <li>Practica la atención plena diariamente</li>
-                <li>Mantén un horario regular de sueño</li>
-                <li>Realiza ejercicio físico regularmente</li>
-                <li>Mantén conexiones sociales saludables</li>
+                <li>• Practica la atención plena diariamente</li>
+                <li>• Mantén un horario regular de sueño</li>
+                <li>• Realiza ejercicio físico regularmente</li>
+                <li>• Mantén conexiones sociales saludables</li>
               </ul>
             </CardContent>
           </Card>
@@ -72,10 +72,10 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-muted-foreground">
-                <li>Líneas de crisis 24/7</li>
-                <li>Recursos locales de ayuda</li>
-                <li>Guías de autoayuda</li>
-                <li>Grupos de apoyo comunitario</li>
+                <li>• Líneas de crisis 24/7</li>
+                <li>• Recursos locales de ayuda</li>
+                <li>• Guías de autoayuda</li>
+                <li>• Grupos de apoyo comunitario</li>
               </ul>
             </CardContent>
           </Card>
