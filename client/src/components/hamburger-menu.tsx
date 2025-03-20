@@ -24,7 +24,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
-const ADMIN_PASSWORD = "nF#9mK$pL2@vX7"; // Esta contraseña debería moverse a una variable de entorno
+const ADMIN_PASSWORD = "nF#9mK$pL2@vX7"; 
 const ADMIN_PANEL_URL = "https://admin-space-pro-rmportbou.replit.app/auth";
 
 export function HamburgerMenu() {
@@ -43,7 +43,6 @@ export function HamburgerMenu() {
         title: "Acceso concedido",
         description: "Accediendo al panel de administración",
       });
-      // Redirigir al panel de administración externo
       window.location.href = ADMIN_PANEL_URL;
     } else {
       toast({
@@ -81,19 +80,19 @@ export function HamburgerMenu() {
               </Button>
             </Link>
 
-            <Link href="https://empordajobs.empleactiva.com/contenido/contacto" target="_blank">
+            <a href="https://empordajobs.empleactiva.com/contenido/contacto" target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" className="w-full justify-start gap-2">
                 <Headset className="h-4 w-4" />
                 Atención Cliente
               </Button>
-            </Link>
+            </a>
 
-            <Link href="https://empordajobs.empleactiva.com/contenido/ins-neuronmeg-1" target="_blank">
+            <a href="https://empordajobs.empleactiva.com/contenido/ins-neuronmeg-1" target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" className="w-full justify-start gap-2">
                 <GraduationCap className="h-4 w-4" />
                 Instituto NeuronMeg
               </Button>
-            </Link>
+            </a>
 
             <Button 
               variant="ghost" 
