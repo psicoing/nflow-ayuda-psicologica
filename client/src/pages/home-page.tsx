@@ -2,10 +2,16 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
-import { Brain, MessageCircle, Library, LogOut } from "lucide-react";
+import { Brain, MessageCircle, Library, LogOut, Menu, Info, PersonStanding, Building2, Globe, CreditCard } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "@/components/language-selector";
-import { HamburgerMenu } from "@/components/hamburger-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export default function HomePage() {
   const { user, logoutMutation } = useAuth();
@@ -19,8 +25,55 @@ export default function HomePage() {
             {t('welcome')}, {user?.username}
           </h1>
           <div className="flex items-center gap-2">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle className="text-left">Menú</SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col gap-2 mt-4">
+                  <Link href="/about">
+                    <Button variant="ghost" className="w-full justify-start gap-2">
+                      <Info className="h-4 w-4" />
+                      Quienes somos
+                    </Button>
+                  </Link>
+
+                  <Link href="/services/personal">
+                    <Button variant="ghost" className="w-full justify-start gap-2">
+                      <PersonStanding className="h-4 w-4" />
+                      Servicios Personas
+                    </Button>
+                  </Link>
+
+                  <Link href="/services/business">
+                    <Button variant="ghost" className="w-full justify-start gap-2">
+                      <Building2 className="h-4 w-4" />
+                      Servicios Empresas
+                    </Button>
+                  </Link>
+
+                  <Link href="/language">
+                    <Button variant="ghost" className="w-full justify-start gap-2">
+                      <Globe className="h-4 w-4" />
+                      Idiomas
+                    </Button>
+                  </Link>
+
+                  <Link href="/subscriptions">
+                    <Button variant="ghost" className="w-full justify-start gap-2">
+                      <CreditCard className="h-4 w-4" />
+                      Suscripciones
+                    </Button>
+                  </Link>
+                </div>
+              </SheetContent>
+            </Sheet>
             <LanguageSelector />
-            <HamburgerMenu />
             <Button
               variant="outline"
               onClick={() => logoutMutation.mutate()}
