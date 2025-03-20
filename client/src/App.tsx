@@ -13,12 +13,14 @@ import { ProtectedRoute } from "./lib/protected-route";
 import SubscriptionsPage from "@/pages/subscriptions";
 import ResourcesPage from "@/pages/resources";
 import AboutPage from "@/pages/about";
+import BusinessServicesPage from "@/pages/services/business";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={AuthPage} />
       <Route path="/about" component={AboutPage} />
+      <Route path="/services/business" component={BusinessServicesPage} />
       <ProtectedRoute path="/dashboard" component={HomePage} />
       <ProtectedRoute path="/chat" component={ChatPage} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
