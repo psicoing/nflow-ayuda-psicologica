@@ -81,7 +81,7 @@ export function HamburgerMenu() {
               </Button>
             </Link>
 
-            <Link href="/customer-support">
+            <Link href="https://empordajobs.empleactiva.com/contenido/contacto" target="_blank">
               <Button variant="ghost" className="w-full justify-start gap-2">
                 <Headset className="h-4 w-4" />
                 Atención Cliente
