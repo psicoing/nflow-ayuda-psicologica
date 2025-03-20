@@ -14,6 +14,7 @@ import SubscriptionsPage from "@/pages/subscriptions";
 import ResourcesPage from "@/pages/resources";
 import AboutPage from "@/pages/about";
 import BusinessServicesPage from "@/pages/services/business";
+import PersonalServicesPage from "@/pages/services/personal";
 
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/" component={AuthPage} />
       <Route path="/about" component={AboutPage} />
       <Route path="/services/business" component={BusinessServicesPage} />
+      <Route path="/services/personal" component={PersonalServicesPage} />
       <ProtectedRoute path="/dashboard" component={HomePage} />
       <ProtectedRoute path="/chat" component={ChatPage} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
