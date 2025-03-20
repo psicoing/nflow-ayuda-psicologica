@@ -16,8 +16,8 @@ import ResourcesPage from "@/pages/resources";
 function Router() {
   return (
     <Switch>
-      <ProtectedRoute path="/" component={HomePage} />
-      <Route path="/login" component={AuthPage} />
+      <Route path="/" component={AuthPage} />
+      <ProtectedRoute path="/dashboard" component={HomePage} />
       <ProtectedRoute path="/chat" component={ChatPage} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
       <ProtectedRoute path="/admin-secret-panel" component={SecretAdminPage} />
