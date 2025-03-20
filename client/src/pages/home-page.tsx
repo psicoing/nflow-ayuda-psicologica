@@ -22,7 +22,7 @@ export default function HomePage() {
       <div className="max-w-6xl mx-auto p-4 space-y-6 w-full">
         <header className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent text-center sm:text-left">
-            {t('welcome')}, {user?.username}
+            Bienvenido, {user?.username}
           </h1>
           <div className="flex items-center gap-2">
             <Sheet>
@@ -80,7 +80,7 @@ export default function HomePage() {
               disabled={logoutMutation.isPending}
             >
               <LogOut className="h-4 w-4 mr-2" />
-              {t('logout')}
+              Cerrar sesión
             </Button>
           </div>
         </header>
@@ -90,15 +90,15 @@ export default function HomePage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageCircle className="h-6 w-6 text-primary" />
-                {t('startChat')}
+                Iniciar Chat
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4">
-                {t('startChatDesc')}
+                Comienza una conversación con nuestro asistente virtual
               </p>
               <Link href="/chat">
-                <Button className="w-full">{t('startChat')}</Button>
+                <Button className="w-full">Comenzar Chat</Button>
               </Link>
             </CardContent>
           </Card>
@@ -107,15 +107,15 @@ export default function HomePage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Brain className="h-6 w-6 text-primary" />
-                {t('mentalHealthTips')}
+                Consejos de Salud Mental
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-muted-foreground">
-                <li>{t('tips.mindfulness')}</li>
-                <li>{t('tips.sleep')}</li>
-                <li>{t('tips.exercise')}</li>
-                <li>{t('tips.connect')}</li>
+                <li>Practica la atención plena diariamente</li>
+                <li>Mantén un horario regular de sueño</li>
+                <li>Realiza ejercicio físico regularmente</li>
+                <li>Mantén conexiones sociales saludables</li>
               </ul>
             </CardContent>
           </Card>
@@ -124,15 +124,15 @@ export default function HomePage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Library className="h-6 w-6 text-primary" />
-                {t('resources')}
+                Recursos
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-muted-foreground">
-                <li>{t('resourcesList.crisis')}</li>
-                <li>{t('resourcesList.local')}</li>
-                <li>{t('resourcesList.selfHelp')}</li>
-                <li>{t('resourcesList.community')}</li>
+                <li>Líneas de crisis 24/7</li>
+                <li>Recursos locales de ayuda</li>
+                <li>Guías de autoayuda</li>
+                <li>Grupos de apoyo comunitario</li>
               </ul>
             </CardContent>
           </Card>
