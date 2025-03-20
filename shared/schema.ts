@@ -16,11 +16,6 @@ export const chats = pgTable("chats", {
   userId: serial("user_id").references(() => users.id),
   messages: jsonb("messages").$type<Message[]>().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
-  isReviewed: boolean("is_reviewed").notNull().default(false),
-  reviewedBy: serial("reviewed_by").references(() => users.id),
-  reviewNotes: text("review_notes"),
-  isFlagged: boolean("is_flagged").notNull().default(false),
-  flagReason: text("flag_reason"),
 });
 
 export type Message = {
@@ -36,7 +31,6 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Chat = typeof chats.$inferSelect;
 
-// Roles disponibles en el sistema
 export const UserRoles = {
   USER: "user",
   PROFESSIONAL: "professional",
