@@ -1,6 +1,10 @@
 import { Message } from "@shared/schema";
 import OpenAI from "openai";
 
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error('OpenAI API key is required');
+}
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
@@ -31,26 +35,59 @@ export interface ChatResponse {
 
 export async function processUserMessage(userMessage: string, history: Message[]): Promise<ChatResponse> {
   try {
+    console.log('Procesando mensaje del usuario:', userMessage);
+    console.log('Historial de mensajes:', history);
+
+    // Validar entrada
+    if (!userMessage.trim()) {
+      throw new Error('El mensaje no puede estar vacío');
+    }
+
+    // Preparar mensajes para OpenAI
+    const messages = [
+      { role: "system", content: BASE_PROMPT },
+      ...history.map(msg => ({
+        role: msg.role as OpenAI.Chat.ChatCompletionRole,
+        content: msg.content
+      })),
+      { role: "user", content: userMessage }
+    ];
+
+    console.log('Enviando solicitud a OpenAI...');
     const response = await openai.chat.completions.create({
       model: "gpt-4",
-      messages: [
-        { role: "system", content: BASE_PROMPT },
-        ...history.map(msg => ({
-          role: msg.role,
-          content: msg.content
-        } as OpenAI.Chat.ChatCompletionMessage)),
-        { role: "user", content: userMessage }
-      ],
-      temperature: 0.7
+      messages,
+      temperature: 0.7,
+      max_tokens: 1000,
     });
+
+    console.log('Respuesta recibida de OpenAI');
+
+    const assistantResponse = response.choices[0]?.message?.content;
+    if (!assistantResponse) {
+      throw new Error('No se recibió respuesta del asistente');
+    }
 
     return {
       role: "assistant",
-      content: response.choices[0].message.content || "Lo siento, no pude procesar tu consulta.",
+      content: assistantResponse,
       timestamp: new Date()
     };
-  } catch (error) {
-    console.error('Error al procesar mensaje:', error);
-    throw new Error('Error al procesar la consulta psicológica');
+
+  } catch (error: any) {
+    console.error('Error en processUserMessage:', error);
+
+    // Manejar errores específicos de OpenAI
+    if (error instanceof OpenAI.APIError) {
+      console.error('Error de API de OpenAI:', {
+        type: error.type,
+        message: error.message,
+        status: error.status
+      });
+      throw new Error('Error al procesar la consulta con el asistente: ' + error.message);
+    }
+
+    // Manejar otros errores
+    throw new Error('Error al procesar la consulta psicológica: ' + error.message);
   }
 }

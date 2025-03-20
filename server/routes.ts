@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { processUserMessage } from "./promptHandler";
-import { Message, UserRoles } from "@shared/schema";
+import { Message } from "@shared/schema";
 import cors from "cors";
 import express from 'express';
 
@@ -30,25 +30,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Configurar autenticación
   setupAuth(app);
 
-  // Verificar conexión a la base de datos periódicamente
-  setInterval(async () => {
-    const isConnected = await checkDatabaseConnection();
-    console.log('[Health Check] Database connection:', isConnected ? 'OK' : 'ERROR');
-  }, 30000);
-
-  // Ruta de estado de la API
-  app.get("/api/health", async (_req, res) => {
-    const dbConnected = await checkDatabaseConnection();
-    res.json({
-      status: dbConnected ? "ok" : "database_error",
-      timestamp: new Date().toISOString(),
-      version: "1.0.0"
-    });
-  });
-
   // Rutas de API
   app.get("/api/chats", requireAuth, async (req: Request, res: Response) => {
     try {
+      console.log('Obteniendo historial de chats para usuario:', req.user!.id);
       const chats = await storage.getChatHistory(req.user!.id);
       res.json(chats);
     } catch (error) {
@@ -64,8 +49,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
+      console.log('Procesando mensaje del chat para usuario:', req.user!.id);
       const response = await processUserMessage(message, history);
 
+      console.log('Respuesta generada, guardando en historial');
       const messages: Message[] = [
         ...history,
         { role: "user", content: message, timestamp: new Date().toISOString() },
