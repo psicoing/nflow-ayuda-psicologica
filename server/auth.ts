@@ -1,6 +1,6 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Express } from "express";
+import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
@@ -40,7 +40,8 @@ export function setupAuth(app: Express) {
     store: storage.sessionStore,
     cookie: {
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 1000 * 60 * 60 * 24 * 7 // 7 días
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
+      sameSite: 'lax'
     }
   };
 
@@ -91,6 +92,14 @@ export function setupAuth(app: Express) {
     }
   });
 
+  // Middleware para verificar autenticación
+  const requireAuth = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "No autenticado" });
+    }
+    next();
+  };
+
   // Rutas de autenticación
   app.post("/api/login", passport.authenticate("local"), (req, res) => {
     res.json(req.user);
@@ -103,8 +112,28 @@ export function setupAuth(app: Express) {
     });
   });
 
-  app.get("/api/user", (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
+  app.get("/api/user", requireAuth, (req, res) => {
     res.json(req.user);
+  });
+
+  // Proteger rutas del chat
+  app.get("/api/chats", requireAuth, async (req, res) => {
+    try {
+      const chats = await storage.getUserChats(req.user!.id);
+      res.json(chats);
+    } catch (error) {
+      console.error('Error al obtener chats:', error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  app.post("/api/chat", requireAuth, async (req, res) => {
+    try {
+      const chat = await storage.createChat(req.user!.id, req.body);
+      res.json(chat);
+    } catch (error) {
+      console.error('Error al crear chat:', error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
   });
 }

@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Message } from "@shared/schema";
-import { format } from "date-fns";
 import { ArrowLeft, Send, Loader2 } from "lucide-react";
 import { Link, Redirect } from "wouter";
 import { useToast } from "@/hooks/use-toast";
@@ -15,7 +14,6 @@ import { ChatInterface } from "@/components/chat-interface";
 export default function ChatPage() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [message, setMessage] = useState("");
   const [currentHistory, setCurrentHistory] = useState<Message[]>([]);
 
   // Redirigir si no hay usuario autenticado
@@ -36,9 +34,6 @@ export default function ChatPage() {
 
       if (!res.ok) {
         const error = await res.json();
-        if (error.redirectTo) {
-          window.location.href = error.redirectTo;
-        }
         throw new Error(error.message);
       }
 
