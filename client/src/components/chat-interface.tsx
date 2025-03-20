@@ -17,7 +17,7 @@ interface ChatInterfaceProps {
 }
 
 export function ChatInterface({
-  messages,
+  messages = [], // Proporcionar un valor por defecto
   onSendMessage,
   isLoading,
   user,
@@ -80,11 +80,6 @@ export function ChatInterface({
             <div className="max-w-sm space-y-2">
               <h3 className="font-semibold">{t('chat.welcome')}</h3>
               <p>{t('chat.introduction')}</p>
-              {user?.role === "user" && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  Plan gratuito: Tienes 5 mensajes incluidos
-                </p>
-              )}
             </div>
           </div>
         ) : (
