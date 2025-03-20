@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Message } from "@shared/schema";
 import { format } from "date-fns";
-import { Send, Loader2, Bot, User, AlertCircle } from "lucide-react";
+import { Send, Loader2, Bot, User, AlertCircle, Info } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useTranslation } from "react-i18next";
 
 interface ChatInterfaceProps {
   messages: Message[];
@@ -24,6 +25,7 @@ export function ChatInterface({
   const [input, setInput] = useState("");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation();
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -76,11 +78,8 @@ export function ChatInterface({
           <div className="flex flex-col items-center justify-center h-full space-y-4 text-center text-muted-foreground">
             <Bot className="h-12 w-12" />
             <div className="max-w-sm space-y-2">
-              <h3 className="font-semibold">Bienvenido a NFlow Mental Health Support</h3>
-              <p>
-                Estoy aquí para escucharte y apoyarte. Siéntete libre de compartir lo que tienes en mente.
-                Recuerda que soy un asistente de IA y no un reemplazo para ayuda profesional.
-              </p>
+              <h3 className="font-semibold">{t('chat.welcome')}</h3>
+              <p>{t('chat.introduction')}</p>
               {user?.role === "user" && (
                 <p className="text-sm text-muted-foreground mt-2">
                   Plan gratuito: Tienes 5 mensajes incluidos
@@ -136,6 +135,13 @@ export function ChatInterface({
         )}
       </ScrollArea>
 
+      <Alert variant="default" className="mx-4 mb-4">
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          {t('chat.disclaimer')}
+        </AlertDescription>
+      </Alert>
+
       <form
         onSubmit={handleSubmit}
         className="p-4 border-t border-border flex gap-2 items-center"
@@ -144,7 +150,7 @@ export function ChatInterface({
           ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Escribe tu mensaje..."
+          placeholder={t('chat.typeMessage')}
           disabled={isLoading}
           className="flex-1"
         />
