@@ -17,7 +17,7 @@ interface ChatInterfaceProps {
 }
 
 export function ChatInterface({
-  messages = [], // Proporcionar un valor por defecto
+  messages = [],
   onSendMessage,
   isLoading,
   user,
@@ -27,7 +27,6 @@ export function ChatInterface({
   const inputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
 
-  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
@@ -44,7 +43,7 @@ export function ChatInterface({
   };
 
   // Calcular mensajes restantes solo para usuarios normales
-  const remainingMessages = user?.role === "user" ? 5 - (user?.questionCount || 0) : null;
+  const remainingMessages = user?.role === "user" ? 3 - (user?.messageCount || 0) : null;
 
   return (
     <div className="flex flex-col h-full">
@@ -58,11 +57,11 @@ export function ChatInterface({
               <a href="/subscriptions">Actualizar plan</a>
             </Button>
           </div>
-          {remainingMessages && remainingMessages <= 2 && (
+          {remainingMessages && remainingMessages <= 1 && (
             <Alert className="mt-2">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                Te quedan {remainingMessages} mensajes gratuitos. 
+                Te quedan {remainingMessages} {remainingMessages === 1 ? 'mensaje gratuito' : 'mensajes gratuitos'}. 
                 Considera actualizar a un plan premium para continuar la conversación.
               </AlertDescription>
             </Alert>
@@ -146,12 +145,12 @@ export function ChatInterface({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={t('chat.typeMessage')}
-          disabled={isLoading}
+          disabled={isLoading || (user?.role === "user" && remainingMessages <= 0)}
           className="flex-1"
         />
         <Button
           type="submit"
-          disabled={!input.trim() || isLoading}
+          disabled={!input.trim() || isLoading || (user?.role === "user" && remainingMessages <= 0)}
           className="shrink-0"
         >
           {isLoading ? (
