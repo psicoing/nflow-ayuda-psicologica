@@ -2,7 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { generateChatResponse } from "./openai";
+import { processUserMessage } from "./promptHandler";
 import { Message, UserRoles } from "@shared/schema";
 import { hashPassword } from "./utils";
 import cors from "cors";
@@ -32,10 +32,7 @@ const handleDatabaseError = (error: any, req: Request, res: Response, next: Next
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configurar CORS para permitir peticiones desde el panel de administración
   app.use(cors({
-    origin: [
-      'https://admin-space-pro-rmportbou.replit.app',
-      process.env.FRONTEND_URL || "*"
-    ],
+    origin: process.env.FRONTEND_URL || "*",
     credentials: true
   }));
 
@@ -137,36 +134,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Rutas de API
   app.get("/api/chats", async (req: Request, res: Response) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "No autenticado" });
-    const chats = await storage.getChatHistory(req.user!.id);
-    res.json(chats);
+    try {
+      const chats = await storage.getChatHistory(req.user!.id);
+      res.json(chats);
+    } catch (error) {
+      console.error('Error al obtener historial:', error);
+      res.status(500).json({ message: "Error al obtener el historial" });
+    }
   });
 
   app.post("/api/chat", async (req: Request, res: Response) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "No autenticado" });
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "No autenticado" });
+    }
 
     const { message, history } = req.body;
-    if (!message) return res.status(400).json({ message: "Mensaje requerido" });
+    if (!message) {
+      return res.status(400).json({ message: "Mensaje requerido" });
+    }
 
-    // Verificar el límite de preguntas para usuarios normales
+    // Verificar límite de mensajes para usuarios gratuitos
     if (req.user!.role === UserRoles.USER) {
       const user = await storage.getUser(req.user!.id);
       if (user && user.questionCount >= 5) {
         return res.status(403).json({
-          message: "Has alcanzado el límite de preguntas gratuitas",
+          message: "Has alcanzado el límite de mensajes gratuitos",
           redirectTo: "/subscriptions"
         });
       }
     }
 
     try {
-      const response = await generateChatResponse(message, history);
+      // Usar el nuevo procesador de mensajes especializado
+      const response = await processUserMessage(message, history);
+
       const messages: Message[] = [
         ...history,
         { role: "user", content: message, timestamp: new Date().toISOString() },
-        { role: "assistant", content: response, timestamp: new Date().toISOString() }
+        { role: "assistant", content: response.content, timestamp: response.timestamp.toISOString() }
       ];
 
-      // Incrementar el contador de preguntas para usuarios normales
+      // Incrementar contador para usuarios gratuitos
       if (req.user!.role === UserRoles.USER) {
         await storage.updateUser(req.user!.id, {
           questionCount: (req.user!.questionCount || 0) + 1
@@ -175,8 +183,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const chat = await storage.saveChat(req.user!.id, messages);
       res.json(chat);
+
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      console.error('Error al procesar mensaje:', error);
+      res.status(500).json({ 
+        message: error.message || "Error al procesar la consulta psicológica" 
+      });
     }
   });
 
