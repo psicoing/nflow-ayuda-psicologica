@@ -2,20 +2,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
-import { Brain, MessageCircle, Library, LogOut, Menu, Info, PersonStanding, Building2, Globe, CreditCard } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { LanguageSelector } from "@/components/language-selector";
-import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Brain, MessageCircle, Library, LogOut } from "lucide-react";
+import { HamburgerMenu } from "@/components/hamburger-menu";
 
 export default function HomePage() {
   const { user, logoutMutation } = useAuth();
-  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-background to-muted">
@@ -25,55 +16,7 @@ export default function HomePage() {
             Bienvenido, {user?.username}
           </h1>
           <div className="flex items-center gap-2">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="h-10 w-10">
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                <SheetHeader>
-                  <SheetTitle>Menú Principal</SheetTitle>
-                </SheetHeader>
-                <nav className="flex flex-col gap-4 mt-6">
-                  <Button variant="ghost" className="w-full justify-start gap-2" asChild>
-                    <Link href="/about">
-                      <Info className="h-5 w-5" />
-                      Quienes somos
-                    </Link>
-                  </Button>
-
-                  <Button variant="ghost" className="w-full justify-start gap-2" asChild>
-                    <Link href="/services/personal">
-                      <PersonStanding className="h-5 w-5" />
-                      Servicios Personas
-                    </Link>
-                  </Button>
-
-                  <Button variant="ghost" className="w-full justify-start gap-2" asChild>
-                    <Link href="/services/business">
-                      <Building2 className="h-5 w-5" />
-                      Servicios Empresas
-                    </Link>
-                  </Button>
-
-                  <Button variant="ghost" className="w-full justify-start gap-2" asChild>
-                    <Link href="/language">
-                      <Globe className="h-5 w-5" />
-                      Idiomas
-                    </Link>
-                  </Button>
-
-                  <Button variant="ghost" className="w-full justify-start gap-2" asChild>
-                    <Link href="/subscriptions">
-                      <CreditCard className="h-5 w-5" />
-                      Suscripciones
-                    </Link>
-                  </Button>
-                </nav>
-              </SheetContent>
-            </Sheet>
-            <LanguageSelector />
+            <HamburgerMenu />
             <Button
               variant="outline"
               onClick={() => logoutMutation.mutate()}
