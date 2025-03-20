@@ -52,17 +52,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      let messageCount = 0;
       // Verificar contador de mensajes para usuarios gratuitos
       if (req.user!.role === "user") {
-        messageCount = await storage.getMessageCount(req.user!.id);
+        let messageCount = await storage.getMessageCount(req.user!.id);
+        console.log('Mensajes enviados:', messageCount, 'de', MAX_FREE_MESSAGES);
+
+        // Verificar si se alcanzó el límite antes de procesar
         if (messageCount >= MAX_FREE_MESSAGES) {
           return res.status(403).json({
             message: "Has alcanzado el límite de mensajes gratuitos",
             needsSubscription: true
           });
         }
-        await storage.incrementMessageCount(req.user!.id);
       }
 
       console.log('Procesando mensaje del chat para usuario:', req.user!.id);
@@ -76,9 +77,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ];
 
       const chat = await storage.saveChat(req.user!.id, messages);
+
+      // Incrementar el contador después de procesar exitosamente
+      let remainingMessages = null;
+      if (req.user!.role === "user") {
+        await storage.incrementMessageCount(req.user!.id);
+        const newCount = await storage.getMessageCount(req.user!.id);
+        remainingMessages = MAX_FREE_MESSAGES - newCount;
+      }
+
       res.json({
         ...chat,
-        remainingMessages: req.user!.role === "user" ? MAX_FREE_MESSAGES - (messageCount + 1) : null
+        remainingMessages
       });
 
     } catch (error: any) {
