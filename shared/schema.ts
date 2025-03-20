@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, boolean, jsonb, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -9,6 +9,7 @@ export const users = pgTable("users", {
   role: text("role").notNull().default("user"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
+  messageCount: integer("message_count").notNull().default(0),
 });
 
 export const chats = pgTable("chats", {
@@ -38,3 +39,5 @@ export const UserRoles = {
 } as const;
 
 export type UserRole = typeof UserRoles[keyof typeof UserRoles];
+
+export const MAX_FREE_MESSAGES = 3;

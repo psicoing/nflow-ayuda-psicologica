@@ -6,41 +6,30 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Message } from "@shared/schema";
 import { ArrowLeft } from "lucide-react";
-import { Link, Redirect } from "wouter";
+import { Link, Redirect, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { ChatInterface } from "@/components/chat-interface";
 
 export default function ChatPage() {
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [currentHistory, setCurrentHistory] = useState<Message[]>([]);
 
-  // Mostrar carga mientras se verifica la autenticación
   if (authLoading) {
     return <div>Cargando...</div>;
   }
 
-  // Redirigir si no hay usuario autenticado
   if (!user) {
     return <Redirect to="/auth" />;
   }
 
   const { data: chats, isLoading: isLoadingChats } = useQuery({
     queryKey: ["/api/chats"],
-    queryFn: async () => {
-      try {
-        const response = await apiRequest("GET", "/api/chats");
-        return response.json();
-      } catch (error) {
-        console.error("Error fetching chats:", error);
-        return [];
-      }
-    },
   });
 
   const chatMutation = useMutation({
     mutationFn: async (message: string) => {
-      console.log("Enviando mensaje:", message);
       const response = await apiRequest("POST", "/api/chat", {
         message,
         history: currentHistory,
@@ -48,7 +37,14 @@ export default function ChatPage() {
       return response.json();
     },
     onSuccess: (data) => {
-      console.log("Respuesta recibida:", data);
+      if (data.needsSubscription) {
+        toast({
+          title: "Límite alcanzado",
+          description: "Has alcanzado el límite de mensajes gratuitos. Por favor, actualiza tu plan para continuar.",
+        });
+        navigate("/subscriptions");
+        return;
+      }
       setCurrentHistory(data.messages);
       queryClient.invalidateQueries({ queryKey: ["/api/chats"] });
     },

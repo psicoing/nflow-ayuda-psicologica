@@ -1,6 +1,6 @@
 import { Message, User, InsertUser, Chat, users, chats } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { pool } from "./db";
@@ -13,6 +13,8 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   getChatHistory(userId: number): Promise<Chat[]>;
   saveChat(userId: number, messages: Message[]): Promise<Chat>;
+  incrementMessageCount(userId: number): Promise<User>;
+  getMessageCount(userId: number): Promise<number>;
   sessionStore: session.Store;
 }
 
@@ -60,6 +62,7 @@ export class DatabaseStorage implements IStorage {
           ...insertUser,
           isActive: true,
           createdAt: new Date(),
+          messageCount: 0 //Added messageCount to default 0
         })
         .returning();
       return user;
@@ -95,6 +98,35 @@ export class DatabaseStorage implements IStorage {
       return chat;
     } catch (error) {
       console.error('Error en saveChat:', error);
+      throw error;
+    }
+  }
+
+  async incrementMessageCount(userId: number): Promise<User> {
+    try {
+      const [user] = await db
+        .update(users)
+        .set({
+          messageCount: sql`${users.messageCount} + 1`
+        })
+        .where(eq(users.id, userId))
+        .returning();
+      return user;
+    } catch (error) {
+      console.error('Error al incrementar contador de mensajes:', error);
+      throw error;
+    }
+  }
+
+  async getMessageCount(userId: number): Promise<number> {
+    try {
+      const [user] = await db
+        .select({ messageCount: users.messageCount })
+        .from(users)
+        .where(eq(users.id, userId));
+      return user?.messageCount || 0;
+    } catch (error) {
+      console.error('Error al obtener contador de mensajes:', error);
       throw error;
     }
   }
