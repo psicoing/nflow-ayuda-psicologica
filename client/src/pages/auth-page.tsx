@@ -37,8 +37,8 @@ export default function AuthPage() {
           <CardContent>
             <Tabs defaultValue="login" className="space-y-4">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
+                <TabsTrigger value="login">Iniciar Sesión</TabsTrigger>
+                <TabsTrigger value="register">Registrarse</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
@@ -49,20 +49,20 @@ export default function AuthPage() {
                   className="space-y-4"
                 >
                   <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
+                    <Label htmlFor="username">Usuario</Label>
                     <Input
                       id="username"
                       {...loginForm.register("username")}
-                      placeholder="Enter your username"
+                      placeholder="Ingresa tu usuario"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">Contraseña</Label>
                     <Input
                       id="password"
                       type="password"
                       {...loginForm.register("password")}
-                      placeholder="Enter your password"
+                      placeholder="Ingresa tu contraseña"
                     />
                   </div>
                   <Button
@@ -70,7 +70,7 @@ export default function AuthPage() {
                     className="w-full"
                     disabled={loginMutation.isPending}
                   >
-                    {loginMutation.isPending ? "Logging in..." : "Login"}
+                    {loginMutation.isPending ? "Iniciando sesión..." : "Iniciar Sesión"}
                   </Button>
                 </form>
               </TabsContent>
@@ -83,20 +83,20 @@ export default function AuthPage() {
                   className="space-y-4"
                 >
                   <div className="space-y-2">
-                    <Label htmlFor="reg-username">Username</Label>
+                    <Label htmlFor="reg-username">Usuario</Label>
                     <Input
                       id="reg-username"
                       {...registerForm.register("username")}
-                      placeholder="Choose a username"
+                      placeholder="Elige un usuario"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="reg-password">Password</Label>
+                    <Label htmlFor="reg-password">Contraseña</Label>
                     <Input
                       id="reg-password"
                       type="password"
                       {...registerForm.register("password")}
-                      placeholder="Choose a password"
+                      placeholder="Elige una contraseña"
                     />
                   </div>
                   <Button
@@ -104,7 +104,7 @@ export default function AuthPage() {
                     className="w-full"
                     disabled={registerMutation.isPending}
                   >
-                    {registerMutation.isPending ? "Creating account..." : "Register"}
+                    {registerMutation.isPending ? "Creando cuenta..." : "Registrarse"}
                   </Button>
                 </form>
               </TabsContent>
@@ -116,20 +116,20 @@ export default function AuthPage() {
       <div className="hidden lg:flex flex-1 items-center justify-center bg-primary/5 p-8">
         <div className="max-w-md space-y-6">
           <h2 className="text-4xl font-bold text-primary">
-            Your Safe Space for Mental Wellness
+            Tu Espacio Seguro para el Bienestar Mental
           </h2>
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <Heart className="h-6 w-6 text-primary" />
-              <p>24/7 Compassionate AI Support</p>
+              <p>Soporte IA Compasivo 24/7</p>
             </div>
             <div className="flex items-center gap-3">
               <MessageCircle className="h-6 w-6 text-primary" />
-              <p>Confidential Conversations</p>
+              <p>Conversaciones Confidenciales</p>
             </div>
             <div className="flex items-center gap-3">
               <Sparkles className="h-6 w-6 text-primary" />
-              <p>Professional Mental Health Resources</p>
+              <p>Recursos Profesionales de Salud Mental</p>
             </div>
           </div>
         </div>
