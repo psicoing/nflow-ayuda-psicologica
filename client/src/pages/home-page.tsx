@@ -33,7 +33,7 @@ export default function HomePage() {
               </SheetTrigger>
               <SheetContent side="right">
                 <SheetHeader>
-                  <SheetTitle className="text-left">Menú</SheetTitle>
+                  <SheetTitle>Menú</SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-2 mt-4">
                   <Button variant="ghost" className="w-full justify-start gap-2" asChild>
