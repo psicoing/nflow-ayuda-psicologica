@@ -127,7 +127,7 @@ export default function AuthPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Heart className="h-6 w-6 text-primary" />
-                <p>Soporte IA Compasivo 24/7</p>
+                <p>Soporte IA Personalizado 24/7</p>
               </div>
               <div className="flex items-center gap-3">
                 <MessageCircle className="h-6 w-6 text-primary" />
