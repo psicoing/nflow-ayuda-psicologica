@@ -121,7 +121,7 @@ export default function AuthPage() {
 
         <div className="flex items-center justify-center bg-primary/5 p-8">
           <div className="max-w-md space-y-6">
-            <h2 className="text-4xl font-bold text-primary">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-primary leading-tight">
               Tu Espacio Seguro para el Bienestar Mental
             </h2>
             <div className="space-y-4">
