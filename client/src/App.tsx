@@ -15,6 +15,7 @@ import ResourcesPage from "@/pages/resources";
 import AboutPage from "@/pages/about";
 import BusinessServicesPage from "@/pages/services/business";
 import PersonalServicesPage from "@/pages/services/personal";
+import HealthyRoutinesPage from "@/pages/resources/healthy-routines";
 
 function Router() {
   return (
@@ -29,6 +30,7 @@ function Router() {
       <ProtectedRoute path="/admin-secret-panel" component={SecretAdminPage} />
       <ProtectedRoute path="/subscriptions" component={SubscriptionsPage} />
       <ProtectedRoute path="/resources" component={ResourcesPage} />
+      <ProtectedRoute path="/resources/healthy-routines" component={HealthyRoutinesPage} />
       <Route component={NotFound} />
     </Switch>
   );

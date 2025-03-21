@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Book, Heart, Brain, Footprints, Users, Coffee, Moon, Sun } from "lucide-react";
 import { HamburgerMenu } from "@/components/hamburger-menu";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 const resources = [
   {
@@ -87,9 +88,9 @@ export default function ResourcesPage() {
                 </CardHeader>
                 <CardContent>
                   <Button variant="outline" className="w-full" asChild>
-                    <a href={`#${resource.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                    <Link href={resource.title === "Rutinas Saludables" ? "/resources/healthy-routines" : `#${resource.title.toLowerCase().replace(/\s+/g, '-')}`}>
                       Explorar
-                    </a>
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>
