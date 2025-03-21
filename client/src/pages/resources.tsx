@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Book, Heart, Brain, Footprints, Users, Coffee, Moon, Sun } from "lucide-react";
+import { Book, Heart, Brain, Footprints, Users, Coffee, Moon, Sun, Map } from "lucide-react";
 import { HamburgerMenu } from "@/components/hamburger-menu";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
@@ -52,6 +52,12 @@ const resources = [
     description: "Herramienta para registrar y analizar emociones diarias. Permite llevar un control del estado emocional a través de entradas escritas y reflexiones guiadas.",
     icon: Book,
     color: "text-blue-500"
+  },
+  {
+    title: "Mapa de Recursos",
+    description: "Un mapa interactivo que muestra los recursos de salud mental disponibles en tu área.",
+    icon: Map,
+    color: "text-teal-500"
   }
 ];
 
@@ -97,6 +103,8 @@ export default function ResourcesPage() {
                         ? "/resources/self-care"
                         : resource.title === "Grupos de Apoyo"
                         ? "/resources/support-groups"
+                        : resource.title === "Mapa de Recursos"
+                        ? "/resources/mental-health-map"
                         : `#${resource.title.toLowerCase().replace(/\s+/g, '-')}`
                     }>
                       Explorar

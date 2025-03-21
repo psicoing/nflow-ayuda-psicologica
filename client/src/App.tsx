@@ -19,6 +19,7 @@ import HealthyRoutinesPage from "@/pages/resources/healthy-routines";
 import PersonalProgressPage from "@/pages/resources/personal-progress";
 import SelfCarePage from "@/pages/resources/self-care";
 import SupportGroupsPage from "@/pages/resources/support-groups";
+import MentalHealthMapPage from "@/pages/resources/mental-health-map";
 
 function Router() {
   return (
@@ -37,6 +38,7 @@ function Router() {
       <ProtectedRoute path="/resources/personal-progress" component={PersonalProgressPage} />
       <ProtectedRoute path="/resources/self-care" component={SelfCarePage} />
       <ProtectedRoute path="/resources/support-groups" component={SupportGroupsPage} />
+      <ProtectedRoute path="/resources/mental-health-map" component={MentalHealthMapPage} />
       <Route component={NotFound} />
     </Switch>
   );
