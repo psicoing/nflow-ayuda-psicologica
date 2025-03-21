@@ -31,7 +31,7 @@ export default function AuthPage() {
       <header className="p-4 flex justify-between items-center">
         <div className="flex items-center gap-2 text-primary">
           <GraduationCap className="h-6 w-6" />
-          <span className="text-sm font-medium">Powered by INS Nm</span>
+          <span className="text-sm font-medium">Powered by INS NeuronMeg</span>
         </div>
         <HamburgerMenu />
       </header>
