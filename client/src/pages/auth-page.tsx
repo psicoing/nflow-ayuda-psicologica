@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertUserSchema, type InsertUser } from "@shared/schema";
 import { Redirect } from "wouter";
-import { Heart, MessageCircle, Sparkles } from "lucide-react";
+import { Heart, MessageCircle, Sparkles, GraduationCap } from "lucide-react";
 import { HamburgerMenu } from "@/components/hamburger-menu";
 
 export default function AuthPage() {
@@ -28,7 +28,11 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted">
-      <header className="p-4 flex justify-end">
+      <header className="p-4 flex justify-between items-center">
+        <div className="flex items-center gap-2 text-primary">
+          <GraduationCap className="h-6 w-6" />
+          <span className="text-sm font-medium">Powered by INS Nm</span>
+        </div>
         <HamburgerMenu />
       </header>
 
