@@ -148,7 +148,7 @@ export default function MentalHealthMapPage() {
             >
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contribuidores'
               />
               {filteredResources.map(resource => (
                 <Marker
@@ -159,8 +159,8 @@ export default function MentalHealthMapPage() {
                   <Popup>
                     <div className="p-2">
                       <h3 className="font-medium">{resource.name}</h3>
-                      <p className="text-sm">{resource.address}</p>
-                      <p className="text-sm text-primary">{resource.phone}</p>
+                      <p className="text-sm">Dirección: {resource.address}</p>
+                      <p className="text-sm text-primary">Teléfono: {resource.phone}</p>
                     </div>
                   </Popup>
                 </Marker>
