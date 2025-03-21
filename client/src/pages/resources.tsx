@@ -93,6 +93,8 @@ export default function ResourcesPage() {
                         ? "/resources/healthy-routines"
                         : resource.title === "Progreso Personal"
                         ? "/resources/personal-progress"
+                        : resource.title === "Autocuidado"
+                        ? "/resources/self-care"
                         : `#${resource.title.toLowerCase().replace(/\s+/g, '-')}`
                     }>
                       Explorar

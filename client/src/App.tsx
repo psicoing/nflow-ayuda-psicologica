@@ -17,6 +17,7 @@ import BusinessServicesPage from "@/pages/services/business";
 import PersonalServicesPage from "@/pages/services/personal";
 import HealthyRoutinesPage from "@/pages/resources/healthy-routines";
 import PersonalProgressPage from "@/pages/resources/personal-progress";
+import SelfCarePage from "@/pages/resources/self-care";
 
 function Router() {
   return (
@@ -33,6 +34,7 @@ function Router() {
       <ProtectedRoute path="/resources" component={ResourcesPage} />
       <ProtectedRoute path="/resources/healthy-routines" component={HealthyRoutinesPage} />
       <ProtectedRoute path="/resources/personal-progress" component={PersonalProgressPage} />
+      <ProtectedRoute path="/resources/self-care" component={SelfCarePage} />
       <Route component={NotFound} />
     </Switch>
   );
