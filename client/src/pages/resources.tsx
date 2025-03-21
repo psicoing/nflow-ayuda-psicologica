@@ -95,6 +95,8 @@ export default function ResourcesPage() {
                         ? "/resources/personal-progress"
                         : resource.title === "Autocuidado"
                         ? "/resources/self-care"
+                        : resource.title === "Grupos de Apoyo"
+                        ? "/resources/support-groups"
                         : `#${resource.title.toLowerCase().replace(/\s+/g, '-')}`
                     }>
                       Explorar
