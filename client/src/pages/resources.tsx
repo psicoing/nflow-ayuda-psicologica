@@ -88,7 +88,13 @@ export default function ResourcesPage() {
                 </CardHeader>
                 <CardContent>
                   <Button variant="outline" className="w-full" asChild>
-                    <Link href={resource.title === "Rutinas Saludables" ? "/resources/healthy-routines" : `#${resource.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                    <Link href={
+                      resource.title === "Rutinas Saludables"
+                        ? "/resources/healthy-routines"
+                        : resource.title === "Progreso Personal"
+                        ? "/resources/personal-progress"
+                        : `#${resource.title.toLowerCase().replace(/\s+/g, '-')}`
+                    }>
                       Explorar
                     </Link>
                   </Button>
