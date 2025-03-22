@@ -69,6 +69,7 @@
     "leaflet": "^1.9.4",
     "lucide-react": "^0.453.0",
     "memorystore": "^1.6.7",
+    "node-fetch": "^3.3.2",
     "openai": "^4.87.3",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",

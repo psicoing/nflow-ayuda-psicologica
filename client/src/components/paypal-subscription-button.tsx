@@ -15,6 +15,7 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
 
   const handleSubscription = async (data: any, actions: any) => {
     try {
+      console.log('Iniciando creación de suscripción con plan:', planId);
       return actions.subscription.create({
         plan_id: planId,
         application_context: {
@@ -26,11 +27,15 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
           cancel_url: window.location.origin + "/subscriptions"
         }
       });
-    } catch (error) {
-      console.error("Error al crear la suscripción:", error);
+    } catch (error: any) {
+      console.error("Error detallado al crear la suscripción:", {
+        error,
+        message: error.message,
+        details: error.details
+      });
       toast({
         title: "Error en la suscripción",
-        description: "No se pudo crear la suscripción. Por favor, intenta nuevamente.",
+        description: error.message || "No se pudo crear la suscripción. Por favor, intenta nuevamente.",
         variant: "destructive",
       });
       return null;
@@ -39,6 +44,7 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
 
   const onApprove = async (data: any) => {
     try {
+      console.log('Suscripción aprobada:', data);
       // Enviar los datos de la suscripción al backend
       await apiRequest("POST", "/api/subscriptions/activate", {
         subscriptionId: data.subscriptionID,
@@ -52,8 +58,12 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
 
       // Recargar la página para actualizar el estado
       window.location.reload();
-    } catch (error) {
-      console.error("Error al activar la suscripción:", error);
+    } catch (error: any) {
+      console.error("Error detallado al activar la suscripción:", {
+        error,
+        message: error.message,
+        details: error.details
+      });
       toast({
         title: "Error en la suscripción",
         description: "Hubo un problema al activar tu suscripción. Por favor, contacta con soporte.",
@@ -63,10 +73,14 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
   };
 
   const onError = (err: any) => {
-    console.error("Error en PayPal:", err);
+    console.error("Error detallado en PayPal:", {
+      error: err,
+      message: err.message,
+      details: err.details
+    });
     toast({
       title: "Error en el pago",
-      description: "Hubo un problema al procesar tu pago. Por favor, intenta nuevamente.",
+      description: err.message || "Hubo un problema al procesar tu pago. Por favor, intenta nuevamente.",
       variant: "destructive",
     });
   };

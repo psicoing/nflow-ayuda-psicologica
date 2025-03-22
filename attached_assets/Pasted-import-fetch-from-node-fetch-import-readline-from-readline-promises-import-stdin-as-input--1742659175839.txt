@@ -1,0 +1,90 @@
+import fetch from 'node-fetch';
+import readline from 'readline/promises';
+import { stdin as input, stdout as output } from 'node:process';
+
+const rl = readline.createInterface({ input, output });
+
+const API_BASE = 'https://api-m.paypal.com'; // LIVE
+// const API_BASE = 'https://api-m.sandbox.paypal.com'; // SANDBOX
+
+const client_id = await rl.question('🔑 Client ID: ');
+const secret = await rl.question('🕵️ Secret: ');
+
+// 1. Get access token
+const getToken = async () => {
+  const res = await fetch(`${API_BASE}/v1/oauth2/token`, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Basic ' + Buffer.from(`${client_id}:${secret}`).toString('base64'),
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: 'grant_type=client_credentials'
+  });
+
+  const data = await res.json();
+  return data.access_token;
+};
+
+// 2. Get product list
+const getProducts = async (token) => {
+  const res = await fetch(`${API_BASE}/v1/catalogs/products`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    }
+  });
+
+  const data = await res.json();
+  return data.products || [];
+};
+
+// 3. Get plans by product_id
+const getPlans = async (token, productId) => {
+  const res = await fetch(`${API_BASE}/v1/billing/plans?product_id=${productId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    }
+  });
+
+  const data = await res.json();
+  return data.plans || [];
+};
+
+const main = async () => {
+  try {
+    console.log('🔐 Obteniendo token...');
+    const token = await getToken();
+
+    console.log('📦 Buscando productos...');
+    const products = await getProducts(token);
+
+    if (!products.length) {
+      console.log('❌ No se encontraron productos.');
+      return;
+    }
+
+    for (const product of products) {
+      console.log(`\n🔹 PRODUCTO: ${product.name}`);
+      console.log(`   ID: ${product.id}`);
+      const plans = await getPlans(token, product.id);
+
+      if (!plans.length) {
+        console.log('   ⚠️ No hay planes asociados');
+        continue;
+      }
+
+      for (const plan of plans) {
+        console.log(`   ➤ Plan: ${plan.name} (${plan.status})`);
+        console.log(`     ID: ${plan.id}`);
+        console.log(`     Precio: ${plan.billing_cycles?.[0]?.pricing_scheme?.fixed_price?.value} ${plan.billing_cycles?.[0]?.pricing_scheme?.fixed_price?.currency_code}`);
+      }
+    }
+  } catch (err) {
+    console.error('💥 Error:', err);
+  } finally {
+    rl.close();
+  }
+};
+
+main();
