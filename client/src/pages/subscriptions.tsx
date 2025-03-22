@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { MessageCircle, CheckCircle, Shield, FileText } from "lucide-react"; // Added FileText import
+import { MessageCircle, CheckCircle, Shield, FileText, Zap, Crown, Server, Clock } from "lucide-react";
 import { PayPalSubscriptionButton } from "@/components/paypal-subscription-button";
 
 export default function SubscriptionsPage() {
@@ -23,7 +23,7 @@ export default function SubscriptionsPage() {
           </p>
         </header>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {/* Plan Gratuito */}
           <Card>
             <CardHeader>
@@ -105,6 +105,76 @@ export default function SubscriptionsPage() {
                     amount="2.99"
                   />
                 )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Plan Avanzado */}
+          <Card className="relative overflow-hidden border-primary/40">
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Zap className="h-5 w-5" />
+                Plan Avanzado
+              </CardTitle>
+              <CardDescription>Para usuarios exigentes</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="text-4xl font-bold">€9.99/mes</div>
+              <ul className="space-y-4">
+                <li className="flex items-center gap-3">
+                  <Server className="h-5 w-5 text-primary" />
+                  <span>50% de recursos del sistema</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Clock className="h-5 w-5 text-primary" />
+                  <span>Mejor tiempo de respuesta</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Shield className="h-5 w-5 text-primary" />
+                  <span>Más bots activos</span>
+                </li>
+              </ul>
+              <div className="pt-4">
+                <div className="text-center space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    Próximamente disponible
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Plan Premium */}
+          <Card className="relative overflow-hidden bg-gradient-to-br from-primary/5 to-primary/10">
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Crown className="h-5 w-5 text-primary" />
+                Plan Premium
+              </CardTitle>
+              <CardDescription>Experiencia completa</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="text-4xl font-bold">€14.99/mes</div>
+              <ul className="space-y-4">
+                <li className="flex items-center gap-3">
+                  <Server className="h-5 w-5 text-primary" />
+                  <span>100% de recursos disponibles</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Shield className="h-5 w-5 text-primary" />
+                  <span>Acceso total a bots y herramientas</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Crown className="h-5 w-5 text-primary" />
+                  <span>Funcionalidades exclusivas</span>
+                </li>
+              </ul>
+              <div className="pt-4">
+                <div className="text-center space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    Próximamente disponible
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
