@@ -10,6 +10,9 @@ export const users = pgTable("users", {
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
   messageCount: integer("message_count").notNull().default(0),
+  subscriptionId: text("subscription_id"),
+  subscriptionStatus: text("subscription_status").default("inactive"),
+  subscriptionProvider: text("subscription_provider"),
 });
 
 export const chats = pgTable("chats", {

@@ -20,6 +20,15 @@ import PersonalProgressPage from "@/pages/resources/personal-progress";
 import SelfCarePage from "@/pages/resources/self-care";
 import SupportGroupsPage from "@/pages/resources/support-groups";
 import MentalHealthMapPage from "@/pages/resources/mental-health-map";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { useToast } from "@/hooks/use-toast";
+
+const paypalInitialOptions = {
+  clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || '',
+  currency: "EUR",
+  intent: "subscription",
+  vault: true,
+};
 
 function Router() {
   return (
@@ -45,12 +54,24 @@ function Router() {
 }
 
 function App() {
+  const { toast } = useToast();
+
+  if (!import.meta.env.VITE_PAYPAL_CLIENT_ID) {
+    toast({
+      title: "Error de configuración",
+      description: "PayPal no está configurado correctamente. Por favor, contacta al soporte.",
+      variant: "destructive",
+    });
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Router />
-        <Toaster />
-      </AuthProvider>
+      <PayPalScriptProvider options={paypalInitialOptions}>
+        <AuthProvider>
+          <Router />
+          <Toaster />
+        </AuthProvider>
+      </PayPalScriptProvider>
     </QueryClientProvider>
   );
 }

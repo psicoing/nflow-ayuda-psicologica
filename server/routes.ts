@@ -28,6 +28,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   setupAuth(app);
 
+  // Endpoint para activar suscripción de PayPal
+  app.post("/api/subscriptions/activate", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { subscriptionId, userId } = req.body;
+
+      if (!subscriptionId || !userId) {
+        return res.status(400).json({ 
+          message: "Se requiere ID de suscripción y usuario" 
+        });
+      }
+
+      // Actualizar el estado de suscripción del usuario
+      await storage.updateUserSubscription(userId, {
+        subscriptionId,
+        status: 'active',
+        provider: 'paypal'
+      });
+
+      res.json({ 
+        message: "Suscripción activada correctamente",
+        subscriptionId 
+      });
+    } catch (error: any) {
+      console.error('Error al activar suscripción:', error);
+      res.status(500).json({ 
+        message: "Error al activar la suscripción",
+        error: error.message 
+      });
+    }
+  });
+
+  // Rutas existentes de chat
   app.get("/api/chats", requireAuth, async (req: Request, res: Response) => {
     try {
       const chats = await storage.getChatHistory(req.user!.id);

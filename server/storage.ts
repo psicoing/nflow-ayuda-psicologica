@@ -15,6 +15,11 @@ export interface IStorage {
   saveChat(userId: number, messages: Message[]): Promise<Chat>;
   incrementMessageCount(userId: number): Promise<User>;
   getMessageCount(userId: number): Promise<number>;
+  updateUserSubscription(userId: number, subscriptionData: {
+    subscriptionId: string;
+    status: string;
+    provider: string;
+  }): Promise<User>;
   sessionStore: session.Store;
 }
 
@@ -62,12 +67,35 @@ export class DatabaseStorage implements IStorage {
           ...insertUser,
           isActive: true,
           createdAt: new Date(),
-          messageCount: 0 //Added messageCount to default 0
+          messageCount: 0,
+          subscriptionStatus: "inactive"
         })
         .returning();
       return user;
     } catch (error) {
       console.error('Error en createUser:', error);
+      throw error;
+    }
+  }
+
+  async updateUserSubscription(userId: number, subscriptionData: {
+    subscriptionId: string;
+    status: string;
+    provider: string;
+  }): Promise<User> {
+    try {
+      const [user] = await db
+        .update(users)
+        .set({
+          subscriptionId: subscriptionData.subscriptionId,
+          subscriptionStatus: subscriptionData.status,
+          subscriptionProvider: subscriptionData.provider
+        })
+        .where(eq(users.id, userId))
+        .returning();
+      return user;
+    } catch (error) {
+      console.error('Error al actualizar suscripción:', error);
       throw error;
     }
   }

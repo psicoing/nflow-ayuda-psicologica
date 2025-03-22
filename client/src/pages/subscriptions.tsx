@@ -1,9 +1,11 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { MessageCircle, CheckCircle, Shield, Construction } from "lucide-react";
+import { MessageCircle, CheckCircle, Shield } from "lucide-react";
+import { PayPalSubscriptionButton } from "@/components/paypal-subscription-button";
 
 export default function SubscriptionsPage() {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted p-6">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -14,10 +16,6 @@ export default function SubscriptionsPage() {
           <p className="text-muted-foreground">
             Elige el plan que mejor se adapte a tus necesidades
           </p>
-          <div className="flex items-center justify-center gap-2 text-yellow-600 bg-yellow-100 p-3 rounded-lg">
-            <Construction className="h-5 w-5" />
-            <p>Sistema de suscripciones en construcción. Estará disponible próximamente.</p>
-          </div>
         </header>
 
         <div className="grid md:grid-cols-2 gap-6 mt-8">
@@ -39,9 +37,13 @@ export default function SubscriptionsPage() {
                   Soporte básico
                 </li>
               </ul>
-              <Button disabled variant="outline" className="w-full">
-                Plan Actual
-              </Button>
+              <div className="w-full max-w-md mx-auto">
+                {user?.subscriptionStatus === "inactive" ? (
+                  <p className="text-center text-sm text-muted-foreground">Plan actual</p>
+                ) : (
+                  <p className="text-center text-sm text-primary">Plan básico disponible</p>
+                )}
+              </div>
             </CardContent>
           </Card>
 
@@ -70,16 +72,17 @@ export default function SubscriptionsPage() {
                   Soporte premium 24/7
                 </li>
               </ul>
-              <Button 
-                disabled
-                className="w-full"
-                variant="secondary"
-              >
-                Próximamente
-              </Button>
-              <p className="text-sm text-center text-muted-foreground">
-                El sistema de suscripciones estará disponible pronto
-              </p>
+              {user?.subscriptionStatus !== "active" && (
+                <PayPalSubscriptionButton 
+                  planId="P-XXXXXXXXXX" // Reemplazar con el ID real del plan de PayPal
+                  amount="2.99"
+                />
+              )}
+              {user?.subscriptionStatus === "active" && (
+                <p className="text-center text-sm text-primary font-medium">
+                  ¡Ya tienes el plan premium activo!
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>
