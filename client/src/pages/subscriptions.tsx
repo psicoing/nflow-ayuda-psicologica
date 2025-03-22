@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { MessageCircle, CheckCircle, Shield } from "lucide-react";
+import { MessageCircle, CheckCircle, Shield, FileText } from "lucide-react"; // Added FileText import
 import { PayPalSubscriptionButton } from "@/components/paypal-subscription-button";
 
 export default function SubscriptionsPage() {
@@ -35,7 +35,11 @@ export default function SubscriptionsPage() {
               <ul className="space-y-4">
                 <li className="flex items-center gap-3">
                   <MessageCircle className="h-5 w-5 text-primary" />
-                  <span>5 mensajes gratuitos</span>
+                  <span>3 mensajes gratuitos</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <FileText className="h-5 w-5 text-primary" />
+                  <span>2 recursos de autoayuda</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <CheckCircle className="h-5 w-5 text-primary" />
