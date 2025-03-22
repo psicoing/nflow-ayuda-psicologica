@@ -11,6 +11,9 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
+let isReconnecting = false;
+let reconnectTimeout: NodeJS.Timeout | null = null;
+
 // Configuración del pool de conexiones de Neon con reintentos
 const createPool = () => {
   console.log("[Database] Creando pool de conexiones para la aplicación de salud mental...");
@@ -33,13 +36,52 @@ const createPool = () => {
 export let pool = createPool();
 console.log("[Database] Pool inicial creado para la aplicación de salud mental");
 
+const handleReconnection = async () => {
+  if (isReconnecting) return;
+  isReconnecting = true;
+
+  try {
+    console.log('[Database] Iniciando reconexión...');
+    const newPool = createPool();
+
+    // Verificar que el nuevo pool funciona antes de reemplazar el antiguo
+    await newPool.query('SELECT 1');
+
+    const oldPool = pool;
+    pool = newPool;
+
+    // Cerrar el pool antiguo solo después de que el nuevo esté funcionando
+    if (oldPool) {
+      try {
+        await oldPool.end();
+      } catch (err) {
+        console.error('[Database] Error al cerrar el pool antiguo:', err);
+      }
+    }
+
+    console.log('[Database] Reconexión exitosa');
+    isReconnecting = false;
+
+    if (reconnectTimeout) {
+      clearTimeout(reconnectTimeout);
+      reconnectTimeout = null;
+    }
+  } catch (error) {
+    console.error('[Database] Error durante la reconexión:', error);
+    isReconnecting = false;
+
+    // Programar otro intento de reconexión
+    if (!reconnectTimeout) {
+      reconnectTimeout = setTimeout(handleReconnection, 5000);
+    }
+  }
+};
+
 // Manejar desconexiones y reconectar automáticamente
 pool.on('error', (err) => {
   console.error('[Database] Error en el pool:', err);
-  if (err.message.includes('terminating connection due to administrator command')) {
-    console.log('[Database] Reconectando después de desconexión administrativa...');
-    pool.end().catch(console.error);
-    pool = createPool();
+  if (!isReconnecting && !reconnectTimeout) {
+    reconnectTimeout = setTimeout(handleReconnection, 1000);
   }
 });
 
@@ -51,6 +93,7 @@ export async function checkDatabaseConnection() {
     return true;
   } catch (error) {
     console.error('[Database] Error al verificar conexión:', error);
+    handleReconnection();
     return false;
   }
 }
