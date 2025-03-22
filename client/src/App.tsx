@@ -3,6 +3,8 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./hooks/use-auth";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { useToast } from "@/hooks/use-toast";
 import HomePage from "@/pages/home-page";
 import ChatPage from "@/pages/chat-page";
 import AuthPage from "@/pages/auth-page";
@@ -20,8 +22,6 @@ import PersonalProgressPage from "@/pages/resources/personal-progress";
 import SelfCarePage from "@/pages/resources/self-care";
 import SupportGroupsPage from "@/pages/resources/support-groups";
 import MentalHealthMapPage from "@/pages/resources/mental-health-map";
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
-import { useToast } from "@/hooks/use-toast";
 
 const paypalInitialOptions = {
   clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || '',
@@ -56,17 +56,12 @@ function Router() {
 function App() {
   const { toast } = useToast();
 
-  if (!import.meta.env.VITE_PAYPAL_CLIENT_ID) {
-    toast({
-      title: "Error de configuración",
-      description: "PayPal no está configurado correctamente. Por favor, contacta al soporte.",
-      variant: "destructive",
-    });
-  }
-
   return (
     <QueryClientProvider client={queryClient}>
-      <PayPalScriptProvider options={paypalInitialOptions}>
+      <PayPalScriptProvider 
+        options={paypalInitialOptions}
+        deferLoading={!import.meta.env.VITE_PAYPAL_CLIENT_ID}
+      >
         <AuthProvider>
           <Router />
           <Toaster />

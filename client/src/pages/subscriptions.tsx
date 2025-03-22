@@ -3,8 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { MessageCircle, CheckCircle, Shield } from "lucide-react";
 import { PayPalSubscriptionButton } from "@/components/paypal-subscription-button";
 
+{/* Imports se mantienen igual */}
+
 export default function SubscriptionsPage() {
   const { user } = useAuth();
+  const planId = import.meta.env.VITE_PAYPAL_PLAN_ID || 'P-XXXXXXXXXX';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted p-6">
@@ -72,13 +75,16 @@ export default function SubscriptionsPage() {
                   Soporte premium 24/7
                 </li>
               </ul>
-              {user?.subscriptionStatus !== "active" && (
+              {!import.meta.env.VITE_PAYPAL_CLIENT_ID ? (
+                <p className="text-center text-sm text-muted-foreground">
+                  El sistema de pagos está en mantenimiento. Por favor, inténtalo más tarde.
+                </p>
+              ) : user?.subscriptionStatus !== "active" ? (
                 <PayPalSubscriptionButton 
-                  planId="P-XXXXXXXXXX" // Reemplazar con el ID real del plan de PayPal
+                  planId={planId}
                   amount="2.99"
                 />
-              )}
-              {user?.subscriptionStatus === "active" && (
+              ) : (
                 <p className="text-center text-sm text-primary font-medium">
                   ¡Ya tienes el plan premium activo!
                 </p>
