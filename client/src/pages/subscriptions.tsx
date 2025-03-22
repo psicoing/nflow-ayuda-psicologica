@@ -3,8 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { MessageCircle, CheckCircle, Shield } from "lucide-react";
 import { PayPalSubscriptionButton } from "@/components/paypal-subscription-button";
 
-{/* Imports se mantienen igual */}
-
 export default function SubscriptionsPage() {
   const { user } = useAuth();
   const planId = import.meta.env.VITE_PAYPAL_PLAN_ID || 'P-XXXXXXXXXX';
@@ -23,7 +21,7 @@ export default function SubscriptionsPage() {
 
         <div className="grid md:grid-cols-2 gap-6 mt-8">
           {/* Plan Gratuito */}
-          <Card className="relative overflow-hidden">
+          <Card>
             <CardHeader>
               <CardTitle>Plan Gratuito</CardTitle>
               <CardDescription>Para empezar a explorar</CardDescription>
@@ -56,7 +54,7 @@ export default function SubscriptionsPage() {
               Recomendado
             </div>
             <CardHeader>
-              <CardTitle>Plan ASEQUIBLE</CardTitle>
+              <CardTitle>Plan BÁSICO</CardTitle>
               <CardDescription>Para un apoyo continuo</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -79,15 +77,15 @@ export default function SubscriptionsPage() {
                 <p className="text-center text-sm text-muted-foreground">
                   El sistema de pagos está en mantenimiento. Por favor, inténtalo más tarde.
                 </p>
-              ) : user?.subscriptionStatus !== "active" ? (
+              ) : user?.subscriptionStatus === "active" ? (
+                <p className="text-center text-sm text-primary font-medium">
+                  ¡Ya tienes el plan premium activo!
+                </p>
+              ) : (
                 <PayPalSubscriptionButton 
                   planId={planId}
                   amount="2.99"
                 />
-              ) : (
-                <p className="text-center text-sm text-primary font-medium">
-                  ¡Ya tienes el plan premium activo!
-                </p>
               )}
             </CardContent>
           </Card>

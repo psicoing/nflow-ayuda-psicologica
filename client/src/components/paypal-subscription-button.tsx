@@ -21,7 +21,9 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
           brand_name: "NFlow Mental Health Support",
           user_action: "SUBSCRIBE_NOW",
           shipping_preference: "NO_SHIPPING",
-          locale: "es-ES"
+          locale: "es-ES",
+          return_url: window.location.origin + "/subscriptions",
+          cancel_url: window.location.origin + "/subscriptions"
         }
       });
     } catch (error) {
@@ -47,11 +49,14 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
         title: "¡Suscripción exitosa!",
         description: "Tu suscripción ha sido activada correctamente.",
       });
+
+      // Recargar la página para actualizar el estado
+      window.location.reload();
     } catch (error) {
       console.error("Error al activar la suscripción:", error);
       toast({
         title: "Error en la suscripción",
-        description: "Hubo un problema al activar tu suscripción. Por favor, intenta nuevamente.",
+        description: "Hubo un problema al activar tu suscripción. Por favor, contacta con soporte.",
         variant: "destructive",
       });
     }
@@ -68,18 +73,25 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
 
   if (isRejected) {
     return (
-      <div className="text-center text-red-500">
-        Error al cargar PayPal. Por favor, recarga la página.
+      <div className="text-center p-4 border border-red-200 rounded-lg bg-red-50">
+        <p className="text-red-600">
+          No se pudo cargar PayPal. Por favor, recarga la página o contacta con soporte.
+        </p>
       </div>
     );
   }
 
   if (isPending || isInitial) {
-    return <div className="animate-pulse">Cargando PayPal...</div>;
+    return (
+      <div className="text-center p-4">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
+        <p className="mt-2 text-muted-foreground">Cargando PayPal...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-md mx-auto space-y-4">
       <PayPalButtons
         createSubscription={handleSubscription}
         onApprove={onApprove}
@@ -91,6 +103,9 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
           label: "subscribe"
         }}
       />
+      <p className="text-xs text-center text-muted-foreground">
+        Al suscribirte, aceptas los términos y condiciones del servicio
+      </p>
     </div>
   );
 }

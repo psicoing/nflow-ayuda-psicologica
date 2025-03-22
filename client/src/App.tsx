@@ -23,13 +23,6 @@ import SelfCarePage from "@/pages/resources/self-care";
 import SupportGroupsPage from "@/pages/resources/support-groups";
 import MentalHealthMapPage from "@/pages/resources/mental-health-map";
 
-const paypalInitialOptions = {
-  clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || '',
-  currency: "EUR",
-  intent: "subscription",
-  vault: true,
-};
-
 function Router() {
   return (
     <Switch>
@@ -54,13 +47,19 @@ function Router() {
 }
 
 function App() {
-  const { toast } = useToast();
-
   return (
     <QueryClientProvider client={queryClient}>
       <PayPalScriptProvider 
-        options={paypalInitialOptions}
-        deferLoading={!import.meta.env.VITE_PAYPAL_CLIENT_ID}
+        options={{
+          clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || '',
+          currency: "EUR",
+          intent: "subscription",
+          vault: true,
+          components: "buttons",
+          enableFunding: ["paypal"],
+          disableFunding: ["card", "credit"],
+        }}
+        deferLoading={false}
       >
         <AuthProvider>
           <Router />
