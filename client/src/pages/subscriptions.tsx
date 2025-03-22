@@ -83,9 +83,14 @@ export default function SubscriptionsPage() {
               </ul>
               <div className="pt-4">
                 {!planId ? (
-                  <p className="text-center text-sm text-muted-foreground">
-                    El sistema de pagos está en mantenimiento. Por favor, inténtalo más tarde.
-                  </p>
+                  <div className="text-center space-y-2">
+                    <p className="text-sm text-muted-foreground">
+                      El sistema de pagos está en proceso de verificación. 
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Estaremos activando las suscripciones muy pronto.
+                    </p>
+                  </div>
                 ) : user?.subscriptionStatus === "active" ? (
                   <p className="text-center text-sm text-primary font-medium">
                     ¡Ya tienes el plan premium activo!
