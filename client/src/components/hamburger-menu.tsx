@@ -6,7 +6,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Languages, Book, LogOut, Info, PersonStanding, Building2, Headset, GraduationCap } from "lucide-react";
+import { Menu, Languages, Book, LogOut } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -16,9 +16,20 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import { DeactivateAccountDialog } from "./deactivate-account-dialog";
+import { useLocation } from "wouter";
 
 export function HamburgerMenu() {
   const { user, logoutMutation } = useAuth();
+  const [, navigate] = useLocation();
+
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+      navigate('/auth');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
 
   return (
     <Sheet>
@@ -58,55 +69,17 @@ export function HamburgerMenu() {
                 </a>
               </Button>
               <DeactivateAccountDialog />
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className="w-full justify-start gap-2 text-destructive"
-                onClick={() => logoutMutation.mutate()}
+                onClick={handleLogout}
                 disabled={logoutMutation.isPending}
               >
                 <LogOut className="h-5 w-5" />
-                Cerrar sesión
+                {logoutMutation.isPending ? "Cerrando sesión..." : "Cerrar sesión"}
               </Button>
             </>
-          ) : (
-            // Menú para visitantes
-            <>
-              <Button variant="ghost" className="w-full justify-start gap-2" asChild>
-                <a href="/about">
-                  <Info className="h-5 w-5" />
-                  Quienes somos
-                </a>
-              </Button>
-
-              <Button variant="ghost" className="w-full justify-start gap-2" asChild>
-                <a href="/services/personal">
-                  <PersonStanding className="h-5 w-5" />
-                  Servicios Personas
-                </a>
-              </Button>
-
-              <Button variant="ghost" className="w-full justify-start gap-2" asChild>
-                <a href="/services/business">
-                  <Building2 className="h-5 w-5" />
-                  Servicios Empresas
-                </a>
-              </Button>
-
-              <Button variant="ghost" className="w-full justify-start gap-2" asChild>
-                <a href="https://empordajobs.empleactiva.com/contenido/contacto" target="_blank" rel="noopener noreferrer">
-                  <Headset className="h-5 w-5" />
-                  Atención Cliente
-                </a>
-              </Button>
-
-              <Button variant="ghost" className="w-full justify-start gap-2" asChild>
-                <a href="https://empordajobs.empleactiva.com/contenido/ins-neuronmeg-1" target="_blank" rel="noopener noreferrer">
-                  <GraduationCap className="h-5 w-5" />
-                  Instituto NeuronMeg
-                </a>
-              </Button>
-            </>
-          )}
+          ) : null}
         </nav>
       </SheetContent>
     </Sheet>

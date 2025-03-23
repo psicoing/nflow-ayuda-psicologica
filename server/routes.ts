@@ -193,6 +193,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Nueva ruta de cierre de sesión
+  app.post("/api/logout", (req, res, next) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(200); // Ya está desconectado
+    }
+    req.logout((err) => {
+      if (err) {
+        console.error('Error durante el cierre de sesión:', err);
+        return next(err);
+      }
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('Error al destruir la sesión:', err);
+          return next(err);
+        }
+        res.sendStatus(200);
+      });
+    });
+  });
+
+
   app.use((error: any, _req: Request, res: Response, _next: NextFunction) => {
     console.error('[API Error]', error);
     res.status(500).json({
