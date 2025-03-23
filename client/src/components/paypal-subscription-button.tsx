@@ -16,7 +16,7 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
   const handleSubscription = async (data: any, actions: any) => {
     try {
       console.log('Iniciando creación de suscripción con plan:', planId);
-      return actions.subscription.create({
+      const subscription = await actions.subscription.create({
         plan_id: planId,
         application_context: {
           brand_name: "NFlow Mental Health Support",
@@ -27,15 +27,32 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
           cancel_url: window.location.origin + "/subscriptions"
         }
       });
+
+      if (!subscription) {
+        throw new Error("No se pudo crear la suscripción");
+      }
+
+      console.log('Suscripción creada exitosamente:', subscription);
+      return subscription;
     } catch (error: any) {
       console.error("Error detallado al crear la suscripción:", {
         error,
         message: error.message,
-        details: error.details
+        details: error.details,
+        planId
       });
+
+      let errorMessage = "No se pudo crear la suscripción. ";
+
+      if (error.message?.includes("RESOURCE_NOT_FOUND")) {
+        errorMessage += "El plan de suscripción no está disponible en este momento.";
+      } else {
+        errorMessage += "Por favor, intenta nuevamente más tarde.";
+      }
+
       toast({
         title: "Error en la suscripción",
-        description: error.message || "No se pudo crear la suscripción. Por favor, intenta nuevamente.",
+        description: errorMessage,
         variant: "destructive",
       });
       return null;
@@ -45,6 +62,11 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
   const onApprove = async (data: any) => {
     try {
       console.log('Suscripción aprobada:', data);
+
+      if (!data.subscriptionID) {
+        throw new Error("No se recibió el ID de suscripción");
+      }
+
       // Enviar los datos de la suscripción al backend
       await apiRequest("POST", "/api/subscriptions/activate", {
         subscriptionId: data.subscriptionID,
@@ -62,8 +84,10 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
       console.error("Error detallado al activar la suscripción:", {
         error,
         message: error.message,
-        details: error.details
+        details: error.details,
+        subscriptionData: data
       });
+
       toast({
         title: "Error en la suscripción",
         description: "Hubo un problema al activar tu suscripción. Por favor, contacta con soporte.",
@@ -76,11 +100,21 @@ export function PayPalSubscriptionButton({ planId, amount }: PayPalSubscriptionB
     console.error("Error detallado en PayPal:", {
       error: err,
       message: err.message,
-      details: err.details
+      details: err.details,
+      planId
     });
+
+    let errorMessage = "Hubo un problema al procesar tu pago. ";
+
+    if (err.message?.includes("RESOURCE_NOT_FOUND")) {
+      errorMessage += "El plan de suscripción no está disponible actualmente.";
+    } else {
+      errorMessage += "Por favor, intenta nuevamente o contacta con soporte.";
+    }
+
     toast({
       title: "Error en el pago",
-      description: err.message || "Hubo un problema al procesar tu pago. Por favor, intenta nuevamente.",
+      description: errorMessage,
       variant: "destructive",
     });
   };
