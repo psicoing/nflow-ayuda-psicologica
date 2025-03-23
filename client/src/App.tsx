@@ -4,7 +4,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./hooks/use-auth";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
-import { useToast } from "@/hooks/use-toast";
 import HomePage from "@/pages/home-page";
 import ChatPage from "@/pages/chat-page";
 import AuthPage from "@/pages/auth-page";
@@ -23,7 +22,7 @@ import SelfCarePage from "@/pages/resources/self-care";
 import SupportGroupsPage from "@/pages/resources/support-groups";
 import MentalHealthMapPage from "@/pages/resources/mental-health-map";
 import AdminSubscriptionsPage from "@/pages/admin/subscriptions";
-import EmotionJournalPage from "@/pages/emotion-journal";
+import EmotionJournalPage from "@/pages/resources/emotion-journal";
 
 function Router() {
   return (
@@ -43,8 +42,8 @@ function Router() {
       <ProtectedRoute path="/resources/self-care" component={SelfCarePage} />
       <ProtectedRoute path="/resources/support-groups" component={SupportGroupsPage} />
       <ProtectedRoute path="/resources/mental-health-map" component={MentalHealthMapPage} />
+      <ProtectedRoute path="/resources/emotion-journal" component={EmotionJournalPage} />
       <ProtectedRoute path="/admin/subscriptions" component={AdminSubscriptionsPage} />
-      <ProtectedRoute path="/emotion-journal" component={EmotionJournalPage} />
       <Route component={NotFound} />
     </Switch>
   );
