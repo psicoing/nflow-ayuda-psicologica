@@ -31,7 +31,7 @@ export function DeactivateAccountDialog() {
       });
       // Pequeño retraso para asegurar que el mensaje se muestre antes de la redirección
       setTimeout(() => {
-        navigate("/auth");
+        window.location.href = '/'; // Redirección a la página principal
       }, 1500);
     },
     onError: (error: Error) => {
