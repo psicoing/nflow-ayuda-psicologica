@@ -6,6 +6,7 @@ import { processUserMessage } from "./promptHandler";
 import { Message, MAX_FREE_MESSAGES } from "@shared/schema";
 import cors from "cors";
 import express from 'express';
+import { db } from "./db"; // Assuming db is imported from somewhere
 
 const requireAuth = (req: Request, res: Response, next: NextFunction) => {
   if (!req.isAuthenticated()) {
@@ -146,6 +147,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error al obtener usuarios:', error);
       res.status(500).json({ message: "Error al obtener la lista de usuarios" });
+    }
+  });
+
+  // Ruta para obtener el resumen de suscripciones (solo para administradores)
+  app.get("/api/admin/subscription-summary", requireAuth, async (req: Request, res: Response) => {
+    try {
+      // Verificar si el usuario es administrador
+      if (req.user?.role !== "admin") {
+        return res.status(403).json({ message: "Acceso no autorizado" });
+      }
+
+      const [usersList, summary] = await Promise.all([
+        db.query(`SELECT * FROM subscription_summary ORDER BY created_at DESC`),
+        db.query(`
+          SELECT 
+            estado_usuario,
+            COUNT(*) as total_usuarios,
+            SUM(message_count) as total_mensajes,
+            ROUND(AVG(message_count)::numeric, 2) as promedio_mensajes,
+            COUNT(CASE WHEN puede_enviar_mensajes THEN 1 END) as usuarios_activos
+          FROM subscription_summary
+          GROUP BY estado_usuario
+          ORDER BY 
+            CASE estado_usuario
+              WHEN 'Suscripción activa' THEN 1
+              WHEN 'En período de prueba' THEN 2
+              WHEN 'Límite alcanzado' THEN 3
+            END
+        `)
+      ]);
+
+      res.json({
+        users: usersList.rows,
+        summary: summary.rows
+      });
+    } catch (error) {
+      console.error('Error al obtener resumen de suscripciones:', error);
+      res.status(500).json({ message: "Error al obtener el resumen de suscripciones" });
     }
   });
 
