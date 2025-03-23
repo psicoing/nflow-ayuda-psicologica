@@ -22,11 +22,32 @@ export const chats = pgTable("chats", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const emotionJournals = pgTable("emotion_journals", {
+  id: serial("id").primaryKey(),
+  userId: serial("user_id").references(() => users.id),
+  weekStart: timestamp("week_start").notNull(),
+  mainThought: text("main_thought").notNull(),
+  dominantEmotion: text("dominant_emotion").notNull(),
+  actionTaken: text("action_taken").notNull(),
+  content: text("content").notNull(),
+  emotionCodes: text("emotion_codes").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at"),
+});
+
 export type Message = {
   role: "user" | "assistant";
   content: string;
   timestamp: string;
 };
+
+export const insertEmotionJournalSchema = createInsertSchema(emotionJournals).extend({
+  emotionCodes: z.array(z.string()).min(1, "Al menos un código emocional es requerido"),
+  content: z.string().min(10, "La reflexión debe tener al menos 10 caracteres"),
+});
+
+export type InsertEmotionJournal = z.infer<typeof insertEmotionJournalSchema>;
+export type EmotionJournal = typeof emotionJournals.$inferSelect;
 
 export const insertUserSchema = createInsertSchema(users);
 export const insertChatSchema = createInsertSchema(chats);

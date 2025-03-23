@@ -1,6 +1,6 @@
-import { Message, User, InsertUser, Chat, users, chats } from "@shared/schema";
+import { Message, User, InsertUser, Chat, EmotionJournal, InsertEmotionJournal, users, chats, emotionJournals } from "@shared/schema";
 import { db } from "./db";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, desc } from "drizzle-orm";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { pool } from "./db";
@@ -22,6 +22,10 @@ export interface IStorage {
     provider: string;
   }): Promise<User>;
   sessionStore: session.Store;
+  createEmotionJournal(journal: InsertEmotionJournal): Promise<EmotionJournal>;
+  getUserEmotionJournals(userId: number): Promise<EmotionJournal[]>;
+  getEmotionJournal(id: number): Promise<EmotionJournal | undefined>;
+  updateEmotionJournal(id: number, journal: Partial<InsertEmotionJournal>): Promise<EmotionJournal>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -168,6 +172,66 @@ export class DatabaseStorage implements IStorage {
         .orderBy(users.createdAt);
     } catch (error) {
       console.error('Error en getAllUsers:', error);
+      throw error;
+    }
+  }
+
+  async createEmotionJournal(journal: InsertEmotionJournal): Promise<EmotionJournal> {
+    try {
+      const [newJournal] = await db
+        .insert(emotionJournals)
+        .values({
+          ...journal,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        .returning();
+      return newJournal;
+    } catch (error) {
+      console.error('Error al crear entrada del diario:', error);
+      throw error;
+    }
+  }
+
+  async getUserEmotionJournals(userId: number): Promise<EmotionJournal[]> {
+    try {
+      return await db
+        .select()
+        .from(emotionJournals)
+        .where(eq(emotionJournals.userId, userId))
+        .orderBy(desc(emotionJournals.createdAt));
+    } catch (error) {
+      console.error('Error al obtener entradas del diario:', error);
+      throw error;
+    }
+  }
+
+  async getEmotionJournal(id: number): Promise<EmotionJournal | undefined> {
+    try {
+      const [journal] = await db
+        .select()
+        .from(emotionJournals)
+        .where(eq(emotionJournals.id, id));
+      return journal;
+    } catch (error) {
+      console.error('Error al obtener entrada del diario:', error);
+      throw error;
+    }
+  }
+
+  async updateEmotionJournal(id: number, journal: Partial<InsertEmotionJournal>): Promise<EmotionJournal> {
+    try {
+      const [updatedJournal] = await db
+        .update(emotionJournals)
+        .set({
+          ...journal,
+          updatedAt: new Date()
+        })
+        .where(eq(emotionJournals.id, id))
+        .returning();
+      return updatedJournal;
+    } catch (error) {
+      console.error('Error al actualizar entrada del diario:', error);
       throw error;
     }
   }

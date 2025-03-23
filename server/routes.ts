@@ -191,6 +191,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Nuevas rutas para el diario emocional
+  app.post("/api/emotion-journals", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const journalData = {
+        ...req.body,
+        userId: req.user!.id
+      };
+
+      const journal = await storage.createEmotionJournal(journalData);
+      res.status(201).json(journal);
+    } catch (error: any) {
+      console.error('Error al crear entrada del diario:', error);
+      res.status(500).json({ 
+        message: "Error al crear la entrada del diario",
+        error: error.message 
+      });
+    }
+  });
+
+  app.get("/api/emotion-journals", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const journals = await storage.getUserEmotionJournals(req.user!.id);
+      res.json(journals);
+    } catch (error: any) {
+      console.error('Error al obtener entradas del diario:', error);
+      res.status(500).json({ 
+        message: "Error al obtener las entradas del diario",
+        error: error.message 
+      });
+    }
+  });
+
+  app.get("/api/emotion-journals/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const journal = await storage.getEmotionJournal(parseInt(req.params.id));
+
+      if (!journal) {
+        return res.status(404).json({ message: "Entrada no encontrada" });
+      }
+
+      if (journal.userId !== req.user!.id) {
+        return res.status(403).json({ message: "No autorizado" });
+      }
+
+      res.json(journal);
+    } catch (error: any) {
+      console.error('Error al obtener entrada del diario:', error);
+      res.status(500).json({ 
+        message: "Error al obtener la entrada del diario",
+        error: error.message 
+      });
+    }
+  });
+
+  app.patch("/api/emotion-journals/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const journal = await storage.getEmotionJournal(parseInt(req.params.id));
+
+      if (!journal) {
+        return res.status(404).json({ message: "Entrada no encontrada" });
+      }
+
+      if (journal.userId !== req.user!.id) {
+        return res.status(403).json({ message: "No autorizado" });
+      }
+
+      const updatedJournal = await storage.updateEmotionJournal(parseInt(req.params.id), req.body);
+      res.json(updatedJournal);
+    } catch (error: any) {
+      console.error('Error al actualizar entrada del diario:', error);
+      res.status(500).json({ 
+        message: "Error al actualizar la entrada del diario",
+        error: error.message 
+      });
+    }
+  });
+
   app.use((error: any, _req: Request, res: Response, _next: NextFunction) => {
     console.error('[API Error]', error);
     res.status(500).json({

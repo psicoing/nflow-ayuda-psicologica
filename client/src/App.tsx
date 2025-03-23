@@ -23,6 +23,7 @@ import SelfCarePage from "@/pages/resources/self-care";
 import SupportGroupsPage from "@/pages/resources/support-groups";
 import MentalHealthMapPage from "@/pages/resources/mental-health-map";
 import AdminSubscriptionsPage from "@/pages/admin/subscriptions";
+import EmotionJournalPage from "@/pages/emotion-journal";
 
 function Router() {
   return (
@@ -43,6 +44,7 @@ function Router() {
       <ProtectedRoute path="/resources/support-groups" component={SupportGroupsPage} />
       <ProtectedRoute path="/resources/mental-health-map" component={MentalHealthMapPage} />
       <ProtectedRoute path="/admin/subscriptions" component={AdminSubscriptionsPage} />
+      <ProtectedRoute path="/emotion-journal" component={EmotionJournalPage} />
       <Route component={NotFound} />
     </Switch>
   );
