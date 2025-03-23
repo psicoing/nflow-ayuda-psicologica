@@ -11,12 +11,15 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
+let pool: Pool;
 let isReconnecting = false;
 let reconnectTimeout: NodeJS.Timeout | null = null;
+const MAX_RETRIES = 5;
+const RETRY_DELAY = 5000; // 5 segundos
 
-// Configuración del pool de conexiones de Neon con reintentos
+// Función mejorada para crear el pool de conexiones
 const createPool = () => {
-  console.log("[Database] Creando pool de conexiones para la aplicación de salud mental...");
+  console.log("[Database] Creando nuevo pool de conexiones...");
   return new Pool({ 
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -24,33 +27,29 @@ const createPool = () => {
     },
     max: 20,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
-    // Configuración específica de Neon para mejor rendimiento
-    maxUses: 10000, // Número máximo de consultas por conexión
+    connectionTimeoutMillis: 5000,
+    maxUses: 10000,
     keepAlive: true,
     keepAliveInitialDelayMillis: 10000
   });
 };
 
-// Crear pool inicial
-export let pool = createPool();
-console.log("[Database] Pool inicial creado para la aplicación de salud mental");
-
-const handleReconnection = async () => {
+// Función de reconexión mejorada
+const handleReconnection = async (retryCount = 0) => {
   if (isReconnecting) return;
   isReconnecting = true;
 
   try {
-    console.log('[Database] Iniciando reconexión...');
+    console.log(`[Database] Intento de reconexión ${retryCount + 1}/${MAX_RETRIES}`);
     const newPool = createPool();
 
-    // Verificar que el nuevo pool funciona antes de reemplazar el antiguo
+    // Verificar que el nuevo pool funciona
     await newPool.query('SELECT 1');
 
     const oldPool = pool;
     pool = newPool;
 
-    // Cerrar el pool antiguo solo después de que el nuevo esté funcionando
+    // Cerrar el pool antiguo de manera segura
     if (oldPool) {
       try {
         await oldPool.end();
@@ -70,37 +69,42 @@ const handleReconnection = async () => {
     console.error('[Database] Error durante la reconexión:', error);
     isReconnecting = false;
 
-    // Programar otro intento de reconexión
-    if (!reconnectTimeout) {
-      reconnectTimeout = setTimeout(handleReconnection, 5000);
+    if (retryCount < MAX_RETRIES) {
+      console.log(`[Database] Reintentando en ${RETRY_DELAY/1000} segundos...`);
+      reconnectTimeout = setTimeout(() => handleReconnection(retryCount + 1), RETRY_DELAY);
+    } else {
+      console.error('[Database] Se alcanzó el máximo número de reintentos');
+      throw new Error('No se pudo restablecer la conexión a la base de datos');
     }
   }
 };
 
-// Manejar desconexiones y reconectar automáticamente
+// Inicializar el pool
+pool = createPool();
+
+// Manejar errores del pool
 pool.on('error', (err) => {
   console.error('[Database] Error en el pool:', err);
   if (!isReconnecting && !reconnectTimeout) {
-    reconnectTimeout = setTimeout(handleReconnection, 1000);
+    reconnectTimeout = setTimeout(() => handleReconnection(), 1000);
   }
 });
 
-// Función para verificar la conexión
-export async function checkDatabaseConnection() {
+// Función para verificar el estado de la conexión
+export const checkDatabaseConnection = async () => {
   try {
     const result = await pool.query('SELECT 1');
-    console.log('[Database] Conexión verificada:', result.rows[0]);
-    return true;
+    return result.rows[0] ? true : false;
   } catch (error) {
     console.error('[Database] Error al verificar conexión:', error);
-    handleReconnection();
+    await handleReconnection();
     return false;
   }
-}
+};
 
 // Verificar conexión inicial
 checkDatabaseConnection().catch(console.error);
 
 // Exportar instancia de Drizzle con el pool
 export const db = drizzle(pool, { schema });
-console.log("[Database] ORM Drizzle configurado para la aplicación de salud mental");
+export { pool };
