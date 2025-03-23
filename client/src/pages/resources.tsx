@@ -1,8 +1,18 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Book, Heart, Brain, Footprints, Users, Coffee, Moon, Sun, Map } from "lucide-react";
 import { HamburgerMenu } from "@/components/hamburger-menu";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { Form } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { insertEmotionJournalSchema, type InsertEmotionJournal } from "@shared/schema";
+import { queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 const resources = [
   {
@@ -62,7 +72,105 @@ const resources = [
   }
 ];
 
+const EmotionJournalForm = () => {
+  const { toast } = useToast();
+  const form = useForm<InsertEmotionJournal>({
+    resolver: zodResolver(insertEmotionJournalSchema),
+    defaultValues: {
+      weekStart: new Date().toISOString(),
+      mainThought: "",
+      dominantEmotion: "",
+      actionTaken: "",
+      content: "",
+      emotionCodes: []
+    }
+  });
+
+  const createJournalMutation = useMutation({
+    mutationFn: async (data: InsertEmotionJournal) => {
+      const response = await fetch("/api/emotion-journals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error("Error al crear la entrada");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/emotion-journals"] });
+      toast({
+        title: "Entrada creada",
+        description: "Tu reflexión ha sido guardada exitosamente.",
+      });
+      form.reset();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
+  const onSubmit = (data: InsertEmotionJournal) => {
+    createJournalMutation.mutate(data);
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium">💭 Pensamiento central</label>
+            <Input {...form.register("mainThought")} placeholder="¿Qué idea predomina hoy?" />
+          </div>
+          <div>
+            <label className="text-sm font-medium">❤️ Emoción dominante</label>
+            <Input {...form.register("dominantEmotion")} placeholder="¿Qué emoción resalta?" />
+          </div>
+          <div>
+            <label className="text-sm font-medium">🔁 Acción tomada</label>
+            <Input {...form.register("actionTaken")} placeholder="¿Qué hiciste al respecto?" />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Reflexión</label>
+            <Textarea 
+              {...form.register("content")} 
+              placeholder="Escribe tu reflexión aquí (tipo haiku o 2-3 líneas)"
+              className="h-24"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Códigos emocionales</label>
+            <Input 
+              {...form.register("emotionCodes")} 
+              placeholder="🔥 pasión, 🌫️ confusión, 🌱 renacer (separados por comas)"
+            />
+          </div>
+        </div>
+        <Button 
+          type="submit" 
+          className="w-full"
+          disabled={createJournalMutation.isPending}
+        >
+          {createJournalMutation.isPending ? "Guardando..." : "Guardar entrada"}
+        </Button>
+      </form>
+    </Form>
+  );
+};
+
 export default function ResourcesPage() {
+  const [location] = useLocation();
+  const [showEmotionJournal, setShowEmotionJournal] = useState(false);
+
+  useEffect(() => {
+    if (location.includes("#diario-emocional")) {
+      setShowEmotionJournal(true);
+    }
+  }, [location]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted p-6">
       <header className="p-4 flex justify-end">
@@ -83,7 +191,15 @@ export default function ResourcesPage() {
           {resources.map((resource, index) => {
             const IconComponent = resource.icon;
             return (
-              <Card key={index} className="transition-all hover:shadow-lg hover:-translate-y-1">
+              <Card 
+                key={index} 
+                className="transition-all hover:shadow-lg hover:-translate-y-1"
+                onClick={() => {
+                  if (resource.route === "/resources#diario-emocional") {
+                    setShowEmotionJournal(true);
+                  }
+                }}
+              >
                 <CardHeader>
                   <div className={`${resource.color} mb-4`}>
                     <IconComponent className="h-8 w-8" />
@@ -104,6 +220,22 @@ export default function ResourcesPage() {
             );
           })}
         </div>
+
+        {showEmotionJournal && (
+          <div className="mt-12 max-w-2xl mx-auto" id="diario-emocional">
+            <Card>
+              <CardHeader>
+                <CardTitle>Diario Emocional</CardTitle>
+                <CardDescription>
+                  Registra tus emociones y reflexiones del día
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EmotionJournalForm />
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );
