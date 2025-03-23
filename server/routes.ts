@@ -29,7 +29,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   setupAuth(app);
 
-  // Endpoint para activar suscripción de PayPal
+  // Revertir a la versión básica sin sistema premium
   app.post("/api/subscriptions/activate", requireAuth, async (req: Request, res: Response) => {
     try {
       const { subscriptionId, userId } = req.body;
@@ -43,7 +43,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Actualizar el estado de suscripción del usuario
       await storage.updateUserSubscription(userId, {
         subscriptionId,
-        status: 'active', // Cambiamos a 'active' cuando PayPal confirma
+        status: 'active',
         provider: 'paypal'
       });
 
@@ -82,19 +82,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      // Verificar límite de mensajes para usuarios gratuitos
-      if (req.user!.role === "user") {
-        const messageCount = await storage.getMessageCount(req.user!.id);
-        console.log('Mensajes enviados:', messageCount, 'de', MAX_FREE_MESSAGES);
-
-        if (messageCount >= MAX_FREE_MESSAGES) {
-          return res.status(403).json({
-            message: "Has alcanzado el límite de mensajes gratuitos",
-            needsSubscription: true
-          });
-        }
-      }
-
       // Procesar el mensaje
       const response = await processUserMessage(message, history);
 
@@ -115,19 +102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Guardar el chat
       const chat = await storage.saveChat(req.user!.id, messages);
-
-      // Incrementar contador solo para usuarios gratuitos
-      if (req.user!.role === "user") {
-        await storage.incrementMessageCount(req.user!.id);
-        const newCount = await storage.getMessageCount(req.user!.id);
-
-        res.json({
-          ...chat,
-          remainingMessages: MAX_FREE_MESSAGES - newCount
-        });
-      } else {
-        res.json(chat);
-      }
+      res.json(chat);
 
     } catch (error: any) {
       console.error('Error al procesar mensaje:', error);
