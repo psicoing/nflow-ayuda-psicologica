@@ -168,6 +168,9 @@ export default function ResourcesPage() {
   useEffect(() => {
     if (location.includes("#diario-emocional")) {
       setShowEmotionJournal(true);
+      setTimeout(() => {
+        document.getElementById('diario-emocional')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     }
   }, [location]);
 
@@ -197,6 +200,9 @@ export default function ResourcesPage() {
                 onClick={() => {
                   if (resource.route === "/resources#diario-emocional") {
                     setShowEmotionJournal(true);
+                    setTimeout(() => {
+                      document.getElementById('diario-emocional')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
                   }
                 }}
               >
