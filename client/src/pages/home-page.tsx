@@ -9,36 +9,41 @@ export default function HomePage() {
   const { user, logoutMutation } = useAuth();
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background to-muted">
-      <div className="max-w-6xl mx-auto p-4 space-y-6">
-        <header className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent text-center sm:text-left">
-            Bienvenido, {user?.username}
-          </h1>
-          <div className="flex items-center gap-2">
-            <HamburgerMenu />
-            <Button
-              variant="outline"
-              onClick={() => logoutMutation.mutate()}
-              disabled={logoutMutation.isPending}
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Cerrar sesión
-            </Button>
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted">
+      <header className="p-6 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent text-center sm:text-left">
+              ¡Bienvenido, {user?.username}!
+            </h1>
+            <div className="flex items-center gap-3">
+              <HamburgerMenu />
+              <Button
+                variant="outline"
+                onClick={() => logoutMutation.mutate()}
+                disabled={logoutMutation.isPending}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Cerrar sesión
+              </Button>
+            </div>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageCircle className="h-6 w-6 text-primary" />
-                Iniciar Chat
-              </CardTitle>
+      <main className="max-w-6xl mx-auto p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Tarjeta de Chat */}
+          <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <CardHeader className="space-y-4">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <MessageCircle className="h-8 w-8 text-primary" />
+              </div>
+              <CardTitle className="text-2xl">Iniciar Chat</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground mb-4">
-                Comienza una conversación con nuestro asistente virtual
+              <p className="text-muted-foreground mb-6">
+                Comienza una conversación con nuestro asistente virtual especializado en apoyo emocional
               </p>
               <Link href="/chat">
                 <Button className="w-full">Comenzar Chat</Button>
@@ -46,41 +51,72 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Brain className="h-6 w-6 text-primary" />
-                Consejos de Salud Mental
-              </CardTitle>
+          {/* Tarjeta de Consejos */}
+          <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <CardHeader className="space-y-4">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Brain className="h-8 w-8 text-primary" />
+              </div>
+              <CardTitle className="text-2xl">Consejos de Salud Mental</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>• Practica la atención plena diariamente</li>
-                <li>• Mantén un horario regular de sueño</li>
-                <li>• Realiza ejercicio físico regularmente</li>
-                <li>• Mantén conexiones sociales saludables</li>
+              <ul className="space-y-3 text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary/50" />
+                  Practica la atención plena diariamente
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary/50" />
+                  Mantén un horario regular de sueño
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary/50" />
+                  Realiza ejercicio físico regularmente
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary/50" />
+                  Mantén conexiones sociales saludables
+                </li>
               </ul>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Library className="h-6 w-6 text-primary" />
-                Recursos
-              </CardTitle>
+          {/* Tarjeta de Recursos */}
+          <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <CardHeader className="space-y-4">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Library className="h-8 w-8 text-primary" />
+              </div>
+              <CardTitle className="text-2xl">Recursos</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>• Líneas de crisis 24/7</li>
-                <li>• Recursos locales de ayuda</li>
-                <li>• Guías de autoayuda</li>
-                <li>• Grupos de apoyo comunitario</li>
+              <ul className="space-y-3 text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary/50" />
+                  Líneas de crisis 24/7
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary/50" />
+                  Recursos locales de ayuda
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary/50" />
+                  Guías de autoayuda
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary/50" />
+                  Grupos de apoyo comunitario
+                </li>
               </ul>
+              <Link href="/resources" className="block mt-6">
+                <Button variant="outline" className="w-full">
+                  Explorar recursos
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
