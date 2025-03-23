@@ -43,9 +43,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Actualizar el estado de suscripción del usuario
       await storage.updateUserSubscription(userId, {
         subscriptionId,
-        status: 'active',
+        status: 'active', // Cambiamos a 'active' cuando PayPal confirma
         provider: 'paypal'
       });
+
+      // Registrar la activación en los logs
+      console.log(`Suscripción activada - Usuario: ${userId}, Plan: ${subscriptionId}`);
 
       res.json({ 
         message: "Suscripción activada correctamente",

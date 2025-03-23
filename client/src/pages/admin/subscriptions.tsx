@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, User, Clock } from "lucide-react";
+import { MessageCircle, User, Clock, AlertTriangle } from "lucide-react";
 
 interface SubscriptionSummary {
   estado_usuario: string;
@@ -43,29 +43,44 @@ export default function AdminSubscriptionsPage() {
 
   return (
     <div className="container mx-auto p-4 space-y-8">
-      <h1 className="text-3xl font-bold">Panel de Suscripciones</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Panel de Suscripciones</h1>
+        <Badge variant="outline" className="text-sm">
+          Actualizado: {new Date().toLocaleTimeString()}
+        </Badge>
+      </div>
 
       {/* Resumen general */}
       <div className="grid md:grid-cols-3 gap-4">
         {data?.summary.map((stat) => (
-          <Card key={stat.estado_usuario}>
+          <Card key={stat.estado_usuario} className={
+            stat.estado_usuario === 'Límite alcanzado - Requiere suscripción' 
+              ? 'border-destructive/50' 
+              : ''
+          }>
             <CardHeader>
-              <CardTitle className="text-xl">
+              <CardTitle className="text-xl flex items-center gap-2">
+                {stat.estado_usuario === 'Límite alcanzado - Requiere suscripción' && (
+                  <AlertTriangle className="h-5 w-5 text-destructive" />
+                )}
                 {stat.estado_usuario}
               </CardTitle>
+              <CardDescription>
+                {stat.usuarios_activos} de {stat.total_usuarios} usuarios activos
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">
                   <User className="inline h-4 w-4 mr-1" />
-                  Usuarios:
+                  Total usuarios:
                 </span>
                 <span className="font-medium">{stat.total_usuarios}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">
                   <MessageCircle className="inline h-4 w-4 mr-1" />
-                  Mensajes:
+                  Total mensajes:
                 </span>
                 <span className="font-medium">{stat.total_mensajes}</span>
               </div>
@@ -83,10 +98,17 @@ export default function AdminSubscriptionsPage() {
         <h2 className="text-2xl font-semibold">Detalle de Usuarios</h2>
         <div className="grid gap-4">
           {data?.users.map((user) => (
-            <Card key={user.id}>
+            <Card key={user.id} className={
+              !user.puede_enviar_mensajes ? 'border-destructive/50' : ''
+            }>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                  <span>{user.username}</span>
+                  <span className="flex items-center gap-2">
+                    {!user.puede_enviar_mensajes && (
+                      <AlertTriangle className="h-5 w-5 text-destructive" />
+                    )}
+                    {user.username}
+                  </span>
                   <Badge variant={user.puede_enviar_mensajes ? "default" : "destructive"}>
                     {user.estado_usuario}
                   </Badge>
@@ -98,7 +120,9 @@ export default function AdminSubscriptionsPage() {
                     <MessageCircle className="inline h-4 w-4 mr-1" />
                     Mensajes enviados:
                   </span>
-                  <span>{user.message_count}</span>
+                  <span className={user.message_count >= 3 ? "text-destructive font-medium" : ""}>
+                    {user.message_count} / 3
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">
