@@ -5,7 +5,7 @@ import { PayPalSubscriptionButton } from "@/components/paypal-subscription-butto
 
 export default function SubscriptionsPage() {
   const { user } = useAuth();
-  const planId = "P-9YB07977391058317M7PMZKI"; // Plan ID de PayPal verificado
+  const planId = "P-71F92848AH852493EM7P5EEI"; // Plan Básico de PayPal verificado
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted">
@@ -87,7 +87,7 @@ export default function SubscriptionsPage() {
                     ¡Ya tienes el plan premium activo!
                   </p>
                 ) : (
-                  <PayPalSubscriptionButton 
+                  <PayPalSubscriptionButton
                     planId={planId}
                     amount="2.99"
                   />
