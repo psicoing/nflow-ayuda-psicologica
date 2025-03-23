@@ -5,11 +5,7 @@ import { PayPalSubscriptionButton } from "@/components/paypal-subscription-butto
 
 export default function SubscriptionsPage() {
   const { user } = useAuth();
-  const planId = import.meta.env.VITE_PAYPAL_PLAN_ID;
-
-  if (!planId) {
-    console.error('Error: VITE_PAYPAL_PLAN_ID no está configurado');
-  }
+  const planId = "P-9YB07977391058317M7PMZKI"; // Plan ID de PayPal verificado
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted">
@@ -86,16 +82,7 @@ export default function SubscriptionsPage() {
                 </li>
               </ul>
               <div className="pt-4">
-                {!planId ? (
-                  <div className="text-center space-y-2">
-                    <p className="text-sm text-muted-foreground">
-                      El sistema de pagos está en proceso de verificación. 
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Estaremos activando las suscripciones muy pronto.
-                    </p>
-                  </div>
-                ) : user?.subscriptionStatus === "active" ? (
+                {user?.subscriptionStatus === "active" ? (
                   <p className="text-center text-sm text-primary font-medium">
                     ¡Ya tienes el plan premium activo!
                   </p>
