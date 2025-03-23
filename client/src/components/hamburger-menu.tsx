@@ -25,7 +25,7 @@ export function HamburgerMenu() {
   const handleLogout = async () => {
     try {
       await logoutMutation.mutateAsync();
-      navigate('/auth');
+      window.location.href = '/auth'; // Usando redirección directa para asegurar recarga completa
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }
@@ -60,7 +60,6 @@ export function HamburgerMenu() {
           </div>
 
           {user ? (
-            // Menú para usuarios autenticados
             <>
               <Button variant="ghost" className="w-full justify-start gap-2" asChild>
                 <a href="/resources">
