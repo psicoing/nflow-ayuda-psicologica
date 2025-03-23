@@ -24,7 +24,8 @@ import SubscriptionsPage from "@/pages/subscriptions";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={AuthPage} />
+      <Route path="/" component={HomePage} />
+      <Route path="/auth" component={AuthPage} />
       <Route path="/about" component={AboutPage} />
       <Route path="/services/business" component={BusinessServicesPage} />
       <Route path="/services/personal" component={PersonalServicesPage} />

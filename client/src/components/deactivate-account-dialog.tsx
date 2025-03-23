@@ -29,7 +29,10 @@ export function DeactivateAccountDialog() {
         title: "Cuenta desactivada",
         description: "Tu cuenta ha sido dada de baja correctamente. Esperamos verte pronto de nuevo.",
       });
-      navigate("/auth");
+      // Pequeño retraso para asegurar que el mensaje se muestre antes de la redirección
+      setTimeout(() => {
+        navigate("/auth");
+      }, 1500);
     },
     onError: (error: Error) => {
       toast({
