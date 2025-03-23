@@ -2,7 +2,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
-import { Brain, MessageCircle, Library, LogOut } from "lucide-react";
+import { MessageCircle, Library, LogOut } from "lucide-react";
 import { HamburgerMenu } from "@/components/hamburger-menu";
 
 export default function HomePage() {
@@ -32,7 +32,7 @@ export default function HomePage() {
       </header>
 
       <main className="max-w-6xl mx-auto p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {/* Tarjeta de Chat */}
           <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="space-y-4">
@@ -48,36 +48,6 @@ export default function HomePage() {
               <Link href="/chat">
                 <Button className="w-full">Comenzar Chat</Button>
               </Link>
-            </CardContent>
-          </Card>
-
-          {/* Tarjeta de Consejos */}
-          <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-            <CardHeader className="space-y-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Brain className="h-8 w-8 text-primary" />
-              </div>
-              <CardTitle className="text-2xl">Consejos de Salud Mental</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3 text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary/50" />
-                  Practica la atención plena diariamente
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary/50" />
-                  Mantén un horario regular de sueño
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary/50" />
-                  Realiza ejercicio físico regularmente
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary/50" />
-                  Mantén conexiones sociales saludables
-                </li>
-              </ul>
             </CardContent>
           </Card>
 
