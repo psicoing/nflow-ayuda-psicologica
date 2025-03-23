@@ -8,6 +8,7 @@ import { pool } from "./db";
 const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
+  getAllUsers(): Promise<User[]>;
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
@@ -155,6 +156,18 @@ export class DatabaseStorage implements IStorage {
       return user?.messageCount || 0;
     } catch (error) {
       console.error('Error al obtener contador de mensajes:', error);
+      throw error;
+    }
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    try {
+      return await db
+        .select()
+        .from(users)
+        .orderBy(users.createdAt);
+    } catch (error) {
+      console.error('Error en getAllUsers:', error);
       throw error;
     }
   }
