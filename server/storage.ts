@@ -26,6 +26,7 @@ export interface IStorage {
   getUserEmotionJournals(userId: number): Promise<EmotionJournal[]>;
   getEmotionJournal(id: number): Promise<EmotionJournal | undefined>;
   updateEmotionJournal(id: number, journal: Partial<InsertEmotionJournal>): Promise<EmotionJournal>;
+  deactivateUser(userId: number): Promise<User>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -232,6 +233,22 @@ export class DatabaseStorage implements IStorage {
       return updatedJournal;
     } catch (error) {
       console.error('Error al actualizar entrada del diario:', error);
+      throw error;
+    }
+  }
+  async deactivateUser(userId: number): Promise<User> {
+    try {
+      const [user] = await db
+        .update(users)
+        .set({
+          isActive: false,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, userId))
+        .returning();
+      return user;
+    } catch (error) {
+      console.error('Error al desactivar usuario:', error);
       throw error;
     }
   }

@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
+import { DeactivateAccountDialog } from "./deactivate-account-dialog";
 
 export function HamburgerMenu() {
   const { user, logoutMutation } = useAuth();
@@ -56,6 +57,7 @@ export function HamburgerMenu() {
                   Recursos
                 </a>
               </Button>
+              <DeactivateAccountDialog />
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2 text-destructive"
@@ -63,7 +65,7 @@ export function HamburgerMenu() {
                 disabled={logoutMutation.isPending}
               >
                 <LogOut className="h-5 w-5" />
-                Darse de baja
+                Cerrar sesión
               </Button>
             </>
           ) : (

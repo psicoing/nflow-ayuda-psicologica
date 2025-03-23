@@ -154,6 +154,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Añadir la nueva ruta de borrado después de las rutas existentes
+  app.delete("/api/user", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = req.user!.id;
+      await storage.deactivateUser(userId);
+
+      // Cerrar sesión después de desactivar el usuario
+      req.logout((err) => {
+        if (err) {
+          console.error('Error al cerrar sesión:', err);
+          return res.status(500).json({ message: "Error al procesar la baja" });
+        }
+        res.json({ message: "Usuario dado de baja correctamente" });
+      });
+    } catch (error: any) {
+      console.error('Error al dar de baja al usuario:', error);
+      res.status(500).json({ 
+        message: "Error al procesar la baja",
+        error: error.message 
+      });
+    }
+  });
+
   // Añadir esta ruta después de las rutas del diario emocional
   app.get("/api/admin/users", requireAuth, async (req: Request, res: Response) => {
     try {
