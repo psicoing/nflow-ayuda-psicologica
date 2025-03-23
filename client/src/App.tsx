@@ -31,7 +31,6 @@ function Router() {
       <ProtectedRoute path="/dashboard" component={HomePage} />
       <ProtectedRoute path="/chat" component={ChatPage} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
-      <ProtectedRoute path="/admin/subscriptions" component={AdminSubscriptionsPage} />
       <ProtectedRoute path="/admin-secret-panel" component={SecretAdminPage} />
       <ProtectedRoute path="/resources" component={ResourcesPage} />
       <ProtectedRoute path="/resources/healthy-routines" component={HealthyRoutinesPage} />
@@ -39,6 +38,14 @@ function Router() {
       <ProtectedRoute path="/resources/self-care" component={SelfCarePage} />
       <ProtectedRoute path="/resources/support-groups" component={SupportGroupsPage} />
       <ProtectedRoute path="/resources/mental-health-map" component={MentalHealthMapPage} />
+      <Route path="/subscriptions">
+        <Route>
+          {() => {
+            window.location.href = "/dashboard";
+            return null;
+          }}
+        </Route>
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
