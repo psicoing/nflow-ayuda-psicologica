@@ -1,14 +1,17 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { MessageCircle, CheckCircle, Shield, FileText, Zap, Crown, Server, Clock } from "lucide-react";
-import { PayPalSubscriptionButton } from "@/components/paypal-subscription-button";
+import { HamburgerMenu } from "@/components/hamburger-menu";
 
 export default function SubscriptionsPage() {
   const { user } = useAuth();
-  const planId = "P-71F92848AH852493EM7P5EEI"; // Plan Básico de PayPal verificado
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted">
+      <header className="p-4 flex justify-end">
+        <HamburgerMenu />
+      </header>
+
       <div className="container mx-auto p-4 space-y-6">
         <header className="text-center space-y-4 py-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
@@ -19,7 +22,7 @@ export default function SubscriptionsPage() {
           </p>
         </header>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {/* Plan Gratuito */}
           <Card>
             <CardHeader>
@@ -43,15 +46,9 @@ export default function SubscriptionsPage() {
                 </li>
               </ul>
               <div className="pt-4">
-                {user?.subscriptionStatus === "inactive" ? (
-                  <p className="text-center text-sm text-muted-foreground font-medium">
-                    Plan actual
-                  </p>
-                ) : (
-                  <p className="text-center text-sm text-primary">
-                    Plan básico disponible
-                  </p>
-                )}
+                <p className="text-center text-sm text-muted-foreground">
+                  Plan actual
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -82,25 +79,21 @@ export default function SubscriptionsPage() {
                 </li>
               </ul>
               <div className="pt-4">
-                {user?.subscriptionStatus === "active" ? (
-                  <p className="text-center text-sm text-primary font-medium">
-                    ¡Ya tienes el plan premium activo!
-                  </p>
-                ) : (
-                  <PayPalSubscriptionButton
-                    planId={planId}
-                    amount="2.99"
-                  />
-                )}
+                <button 
+                  className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                  onClick={() => alert("Funcionalidad de pago en desarrollo")}
+                >
+                  Actualizar a Plan Básico
+                </button>
               </div>
             </CardContent>
           </Card>
 
           {/* Plan Avanzado */}
-          <Card className="relative overflow-hidden border-primary/40">
+          <Card className="relative overflow-hidden">
             <CardHeader>
               <CardTitle className="text-2xl flex items-center gap-2">
-                <Zap className="h-5 w-5" />
+                <Crown className="h-5 w-5" />
                 Plan Avanzado
               </CardTitle>
               <CardDescription>Para usuarios exigentes</CardDescription>
@@ -110,58 +103,24 @@ export default function SubscriptionsPage() {
               <ul className="space-y-4">
                 <li className="flex items-center gap-3">
                   <Server className="h-5 w-5 text-primary" />
-                  <span>50% de recursos del sistema</span>
+                  <span>Todas las características del plan básico</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Clock className="h-5 w-5 text-primary" />
-                  <span>Mejor tiempo de respuesta</span>
+                  <span>Análisis emocional avanzado</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Shield className="h-5 w-5 text-primary" />
-                  <span>Más bots activos</span>
+                  <span>Ejercicios personalizados</span>
                 </li>
               </ul>
               <div className="pt-4">
-                <div className="text-center space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    Próximamente disponible
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Plan Premium */}
-          <Card className="relative overflow-hidden bg-gradient-to-br from-primary/5 to-primary/10">
-            <CardHeader>
-              <CardTitle className="text-2xl flex items-center gap-2">
-                <Crown className="h-5 w-5 text-primary" />
-                Plan Premium
-              </CardTitle>
-              <CardDescription>Experiencia completa</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="text-4xl font-bold">€14.99/mes</div>
-              <ul className="space-y-4">
-                <li className="flex items-center gap-3">
-                  <Server className="h-5 w-5 text-primary" />
-                  <span>100% de recursos disponibles</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Shield className="h-5 w-5 text-primary" />
-                  <span>Acceso total a bots y herramientas</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Crown className="h-5 w-5 text-primary" />
-                  <span>Funcionalidades exclusivas</span>
-                </li>
-              </ul>
-              <div className="pt-4">
-                <div className="text-center space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    Próximamente disponible
-                  </p>
-                </div>
+                <button 
+                  className="w-full py-2 px-4 bg-primary/10 text-primary rounded-md hover:bg-primary/20 transition-colors"
+                  onClick={() => alert("Funcionalidad de pago en desarrollo")}
+                >
+                  Actualizar a Plan Avanzado
+                </button>
               </div>
             </CardContent>
           </Card>
