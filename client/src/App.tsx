@@ -6,6 +6,7 @@ import { AuthProvider } from "./hooks/use-auth";
 import HomePage from "@/pages/home-page";
 import ChatPage from "@/pages/chat-page";
 import AuthPage from "@/pages/auth-page";
+import LandingPage from "@/pages/landing-page";
 import AdminDashboard from "@/pages/admin/dashboard";
 import SecretAdminPage from "@/pages/secret-admin";
 import NotFound from "@/pages/not-found";
@@ -24,7 +25,7 @@ import SubscriptionsPage from "@/pages/subscriptions";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={HomePage} />
+      <Route path="/" component={LandingPage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/about" component={AboutPage} />
       <Route path="/services/business" component={BusinessServicesPage} />
