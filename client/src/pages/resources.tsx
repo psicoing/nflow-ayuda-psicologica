@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Book, Heart, Brain, Footprints, Users, Coffee, Moon, Sun, Map } from "lucide-react";
+import { Book, Heart, Brain, Footprints, Users, Coffee, Moon, Sun, Map, Wind } from "lucide-react";
 import { HamburgerMenu } from "@/components/hamburger-menu";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
@@ -54,8 +54,9 @@ const resources = [
   {
     title: "Ejercicios de Respiración",
     description: "Técnicas de respiración guiadas para ayudar a controlar la ansiedad, mejorar la oxigenación y reducir la tensión emocional y física.",
-    icon: Sun,
-    color: "text-yellow-500"
+    icon: Wind,
+    color: "text-cyan-500",
+    route: "/resources#ejercicios-respiracion"
   },
   {
     title: "Diario Emocional",
@@ -161,15 +162,84 @@ const EmotionJournalForm = () => {
   );
 };
 
+const BreathingExercise = () => {
+  const [isActive, setIsActive] = useState(false);
+  const [phase, setPhase] = useState<"inhale" | "hold" | "exhale">("inhale");
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isActive) {
+      timer = setInterval(() => {
+        setSeconds(prev => {
+          const nextSecond = prev + 1;
+          if (phase === "inhale" && nextSecond >= 4) {
+            setPhase("hold");
+            return 0;
+          } else if (phase === "hold" && nextSecond >= 7) {
+            setPhase("exhale");
+            return 0;
+          } else if (phase === "exhale" && nextSecond >= 8) {
+            setPhase("inhale");
+            return 0;
+          }
+          return nextSecond;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [isActive, phase]);
+
+  return (
+    <div className="space-y-6">
+      <div className="relative w-40 h-40 mx-auto">
+        <div 
+          className={`absolute inset-0 rounded-full border-4 border-primary transition-all duration-1000 ${
+            phase === "inhale" ? "scale-100" : 
+            phase === "hold" ? "scale-110" : 
+            "scale-90"
+          }`}
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <p className="text-lg font-medium">
+            {phase === "inhale" ? "Inhala" : 
+             phase === "hold" ? "Mantén" : 
+             "Exhala"}
+          </p>
+        </div>
+      </div>
+      <div className="text-center">
+        <Button
+          onClick={() => setIsActive(!isActive)}
+          variant={isActive ? "destructive" : "default"}
+        >
+          {isActive ? "Detener" : "Comenzar"}
+        </Button>
+      </div>
+      <div className="text-sm text-muted-foreground text-center">
+        Inhala durante 4 segundos, mantén durante 7 segundos, exhala durante 8 segundos.
+        <br />
+        Esta técnica 4-7-8 ayuda a reducir la ansiedad y mejorar la concentración.
+      </div>
+    </div>
+  );
+};
+
 export default function ResourcesPage() {
   const [location] = useLocation();
   const [showEmotionJournal, setShowEmotionJournal] = useState(false);
+  const [showBreathingExercise, setShowBreathingExercise] = useState(false);
 
   useEffect(() => {
     if (location.includes("#diario-emocional")) {
       setShowEmotionJournal(true);
       setTimeout(() => {
         document.getElementById('diario-emocional')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else if (location.includes("#ejercicios-respiracion")) {
+      setShowBreathingExercise(true);
+      setTimeout(() => {
+        document.getElementById('ejercicios-respiracion')?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     }
   }, [location]);
@@ -202,6 +272,11 @@ export default function ResourcesPage() {
                     setShowEmotionJournal(true);
                     setTimeout(() => {
                       document.getElementById('diario-emocional')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  } else if (resource.route === "/resources#ejercicios-respiracion") {
+                    setShowBreathingExercise(true);
+                    setTimeout(() => {
+                      document.getElementById('ejercicios-respiracion')?.scrollIntoView({ behavior: 'smooth' });
                     }, 100);
                   }
                 }}
@@ -238,6 +313,22 @@ export default function ResourcesPage() {
               </CardHeader>
               <CardContent>
                 <EmotionJournalForm />
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {showBreathingExercise && (
+          <div className="mt-12 max-w-2xl mx-auto" id="ejercicios-respiracion">
+            <Card>
+              <CardHeader>
+                <CardTitle>Ejercicios de Respiración</CardTitle>
+                <CardDescription>
+                  Técnica de respiración 4-7-8 para reducir el estrés y la ansiedad
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <BreathingExercise />
               </CardContent>
             </Card>
           </div>
