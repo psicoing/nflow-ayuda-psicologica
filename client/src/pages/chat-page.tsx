@@ -6,14 +6,16 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Message } from "@shared/schema";
 import { ArrowLeft } from "lucide-react";
-import { Link, Redirect } from "wouter";
+import { Link, Redirect, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { ChatInterface } from "@/components/chat-interface";
 
 export default function ChatPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [currentHistory, setCurrentHistory] = useState<Message[]>([]);
+  const [remainingMessages, setRemainingMessages] = useState<number | null>(3);
 
   if (!user) {
     return <Redirect to="/auth" />;
@@ -32,7 +34,16 @@ export default function ChatPage() {
       return response.json();
     },
     onSuccess: (data) => {
+      if (data.needsSubscription) {
+        toast({
+          title: "Límite alcanzado",
+          description: "Has alcanzado el límite de mensajes gratuitos. Por favor, actualiza tu plan para continuar.",
+        });
+        navigate("/subscriptions");
+        return;
+      }
       setCurrentHistory(data.messages);
+      setRemainingMessages(data.remainingMessages);
       queryClient.invalidateQueries({ queryKey: ["/api/chats"] });
     },
     onError: (error: Error) => {
@@ -76,6 +87,7 @@ export default function ChatPage() {
             onSendMessage={handleSubmit}
             isLoading={chatMutation.isPending}
             user={user}
+            remainingMessages={remainingMessages}
           />
         </Card>
       </div>
