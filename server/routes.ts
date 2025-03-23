@@ -154,6 +154,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Añadir esta ruta después de las rutas del diario emocional
+  app.get("/api/admin/users", requireAuth, async (req: Request, res: Response) => {
+    try {
+      // Verificar si el usuario es administrador
+      if (req.user?.role !== "admin") {
+        return res.status(403).json({ message: "Acceso no autorizado" });
+      }
+
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error('Error al obtener usuarios:', error);
+      res.status(500).json({ message: "Error al obtener la lista de usuarios" });
+    }
+  });
+
   app.use((error: any, _req: Request, res: Response, _next: NextFunction) => {
     console.error('[API Error]', error);
     res.status(500).json({
