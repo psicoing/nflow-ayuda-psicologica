@@ -51,7 +51,8 @@ const resources = [
     title: "Diario Emocional",
     description: "Herramienta para registrar y analizar emociones diarias. Permite llevar un control del estado emocional a través de entradas escritas y reflexiones guiadas.",
     icon: Book,
-    color: "text-blue-500"
+    color: "text-blue-500",
+    route: "/resources#diario-emocional"
   },
   {
     title: "Mapa de Recursos",
@@ -94,19 +95,7 @@ export default function ResourcesPage() {
                 </CardHeader>
                 <CardContent>
                   <Button variant="outline" className="w-full" asChild>
-                    <Link href={
-                      resource.title === "Rutinas Saludables"
-                        ? "/resources/healthy-routines"
-                        : resource.title === "Progreso Personal"
-                        ? "/resources/personal-progress"
-                        : resource.title === "Autocuidado"
-                        ? "/resources/self-care"
-                        : resource.title === "Grupos de Apoyo"
-                        ? "/resources/support-groups"
-                        : resource.title === "Mapa de Recursos"
-                        ? "/resources/mental-health-map"
-                        : `#${resource.title.toLowerCase().replace(/\s+/g, '-')}`
-                    }>
+                    <Link href={resource.route || "#"}>
                       Explorar
                     </Link>
                   </Button>
