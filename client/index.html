@@ -12,52 +12,36 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="apple-mobile-web-app-title" content="NFLOW" />
     <link rel="apple-touch-icon" href="/logo192.png" />
-    <style>
-      /* Estilos para el botón de instalación de PWA */
-      #pwa-install-button {
-        position: fixed;
-        top: 20px;
-        right: 80px;
-        padding: 8px 16px;
-        background-color: transparent;
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 6px;
-        font-weight: 500;
-        display: none;
-        z-index: 1000;
-        cursor: pointer;
-        transition: background-color 0.2s;
-      }
-
-      #pwa-install-button:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-      }
-    </style>
   </head>
   <body>
     <div id="root"></div>
-    <button id="pwa-install-button">Instalar app</button>
     <script type="module" src="/src/main.tsx"></script>
     <script>
       let deferredPrompt;
-      const installButton = document.getElementById('pwa-install-button');
 
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        installButton.style.display = 'flex';
+        // Muestra el botón de instalación en el menú
+        const installButton = document.getElementById('pwa-install-button');
+        if (installButton) {
+          installButton.style.display = 'flex';
+        }
       });
 
-      installButton.addEventListener('click', async () => {
+      window.addEventListener('install-pwa', async () => {
         if (!deferredPrompt) return;
 
-        installButton.style.display = 'none';
         deferredPrompt.prompt();
-
         const { outcome } = await deferredPrompt.userChoice;
         console.log(`User response to the install prompt: ${outcome}`);
         deferredPrompt = null;
+
+        // Oculta el botón después de la instalación
+        const installButton = document.getElementById('pwa-install-button');
+        if (installButton) {
+          installButton.style.display = 'none';
+        }
       });
 
       if ('serviceWorker' in navigator) {

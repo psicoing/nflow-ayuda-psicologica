@@ -6,7 +6,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Languages, Book, LogOut, Info, PersonStanding, Building2, Headset, GraduationCap } from "lucide-react";
+import { Menu, Languages, Book, LogOut, Info, PersonStanding, Building2, Headset, GraduationCap, Download } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -29,6 +29,12 @@ export function HamburgerMenu() {
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }
+  };
+
+  const handleInstallClick = () => {
+    // Dispatch a custom event to trigger the PWA installation
+    const event = new Event('install-pwa');
+    window.dispatchEvent(event);
   };
 
   return (
@@ -114,6 +120,17 @@ export function HamburgerMenu() {
                   <GraduationCap className="h-5 w-5" />
                   Instituto NeuronMeg
                 </a>
+              </Button>
+
+              {/* Botón de instalación de PWA */}
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2"
+                onClick={handleInstallClick}
+                id="pwa-install-button"
+              >
+                <Download className="h-5 w-5" />
+                Instalar app
               </Button>
             </>
           )}
