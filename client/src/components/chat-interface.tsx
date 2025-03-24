@@ -51,7 +51,8 @@ export function ChatInterface({
         <div className="p-4 border-b">
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">
-              Plan gratuito: {remainingMessages} {remainingMessages === 1 ? 'mensaje restante' : 'mensajes restantes'}
+              Plan gratuito: {remainingMessages}{" "}
+              {remainingMessages === 1 ? "mensaje restante" : "mensajes restantes"}
             </span>
             <Button variant="outline" size="sm" asChild>
               <Link href="/subscriptions">Actualizar plan</Link>
@@ -61,8 +62,10 @@ export function ChatInterface({
             <Alert className="mt-2">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                Te {remainingMessages === 0 ? 'has quedado sin' : 'queda 1'} mensaje{remainingMessages === 1 ? '' : 's'} gratuito{remainingMessages === 1 ? '' : 's'}. 
-                Considera actualizar a un plan premium para continuar la conversación.
+                Te {remainingMessages === 0 ? "has quedado sin" : "queda 1"} mensaje
+                {remainingMessages === 1 ? "" : "s"} gratuito
+                {remainingMessages === 1 ? "" : "s"}. Considera actualizar a un
+                plan premium para continuar la conversación.
               </AlertDescription>
             </Alert>
           )}
@@ -74,8 +77,8 @@ export function ChatInterface({
           <div className="flex flex-col items-center justify-center h-full space-y-4 text-center text-muted-foreground">
             <Bot className="h-12 w-12" />
             <div className="max-w-sm space-y-2">
-              <h3 className="font-semibold">{t('chat.welcome')}</h3>
-              <p>{t('chat.introduction')}</p>
+              <h3 className="font-semibold">{t("chat.welcome")}</h3>
+              <p>{t("chat.introduction")}</p>
             </div>
           </div>
         ) : (
@@ -88,7 +91,12 @@ export function ChatInterface({
             >
               <Avatar className="h-8 w-8">
                 {message.role === "user" ? (
-                  <User className="h-5 w-5" />
+                  <div className="relative">
+                    <User className="h-5 w-5" />
+                    {user?.role === "user" && (
+                      <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-orange-500" title="Usuario gratuito" />
+                    )}
+                  </div>
                 ) : (
                   <Bot className="h-5 w-5" />
                 )}
@@ -129,7 +137,7 @@ export function ChatInterface({
       <Alert variant="default" className="mx-4 mb-4">
         <Info className="h-4 w-4" />
         <AlertDescription>
-          {t('chat.disclaimer')}
+          {t("chat.disclaimer")}
         </AlertDescription>
       </Alert>
 
@@ -141,7 +149,7 @@ export function ChatInterface({
           ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={t('chat.typeMessage')}
+          placeholder={t("chat.typeMessage")}
           disabled={isLoading || (user?.role === "user" && remainingMessages === 0)}
           className="flex-1"
         />

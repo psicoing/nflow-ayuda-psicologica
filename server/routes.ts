@@ -47,6 +47,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
+      const user = req.user!;
+
+      // Verificar límite de mensajes para usuarios gratuitos
+      if (user.role === "user") {
+        const messageCount = user.messageCount || 0;
+        if (messageCount >= MAX_FREE_MESSAGES) {
+          return res.status(403).json({
+            message: "Has alcanzado el límite de mensajes gratuitos",
+            remainingMessages: 0
+          });
+        }
+      }
+
       // Procesar el mensaje
       const response = await processUserMessage(message, history);
 
@@ -65,9 +78,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ];
 
+      // Actualizar el contador de mensajes para usuarios gratuitos
+      if (user.role === "user") {
+        await storage.incrementMessageCount(user.id);
+      }
+
       // Guardar el chat
-      const chat = await storage.saveChat(req.user!.id, messages);
-      res.json(chat);
+      const chat = await storage.saveChat(user.id, messages);
+
+      // Obtener el número de mensajes restantes
+      const remainingMessages = user.role === "user" 
+        ? MAX_FREE_MESSAGES - (user.messageCount + 1)
+        : null;
+
+      res.json({ ...chat, remainingMessages });
 
     } catch (error: any) {
       console.error('Error al procesar mensaje:', error);

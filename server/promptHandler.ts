@@ -9,7 +9,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// Prompt más simple para empezar
 const BASE_PROMPT = `Eres un asistente amable y profesional que ayuda con consultas sobre salud mental.
 Tus respuestas deben ser claras, empáticas y basadas en evidencia científica.
 Si detectas una situación que requiere atención profesional inmediata, indica esto claramente.`;
@@ -40,6 +39,11 @@ export async function processUserMessage(userMessage: string, history: Message[]
       messages,
       temperature: 0.7,
       max_tokens: 500
+    }).catch(error => {
+      if (error.status === 401) {
+        throw new Error('Error de autenticación con OpenAI. Por favor, contacta al soporte.');
+      }
+      throw error;
     });
 
     if (!completion.choices[0]?.message?.content) {
@@ -57,6 +61,6 @@ export async function processUserMessage(userMessage: string, history: Message[]
     if (error instanceof OpenAI.APIError) {
       throw new Error(`Error de comunicación con el asistente: ${error.message}`);
     }
-    throw new Error('Error al procesar tu mensaje: ' + (error as Error).message);
+    throw error;
   }
 }
