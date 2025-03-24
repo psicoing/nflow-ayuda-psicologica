@@ -16,7 +16,9 @@ export default function LandingPage() {
             <Button variant="outline" className="text-white border-white/20 hover:bg-white/10" asChild>
               <Link href="/auth">Iniciar sesión</Link>
             </Button>
-            <HamburgerMenu />
+            <div className="text-white">
+              <HamburgerMenu />
+            </div>
           </div>
         </div>
       </header>

@@ -25,7 +25,7 @@ export function HamburgerMenu() {
   const handleLogout = async () => {
     try {
       await logoutMutation.mutateAsync();
-      window.location.href = '/auth'; // Usando redirección directa para asegurar recarga completa
+      window.location.href = '/auth';
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }
@@ -34,7 +34,7 @@ export function HamburgerMenu() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="h-10 w-10">
+        <Button variant="outline" size="icon" className="h-10 w-10 border-white/20 text-white hover:bg-white/10">
           <Menu className="h-6 w-6" />
         </Button>
       </SheetTrigger>
