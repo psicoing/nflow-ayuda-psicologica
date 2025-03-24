@@ -34,7 +34,7 @@ export function HamburgerMenu() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="h-10 w-10 border-white/20 text-white hover:bg-white/10">
+        <Button variant="ghost" size="icon" className="h-10 w-10 text-white hover:bg-white/10">
           <Menu className="h-6 w-6" />
         </Button>
       </SheetTrigger>
