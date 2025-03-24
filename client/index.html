@@ -34,10 +34,19 @@
           // Si no hay prompt de instalación, significa que estamos en iOS o ya está instalada
           const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
           if (isIOS) {
-            alert('Para instalar la aplicación:\n1. Toca el botón Compartir (📱)\n2. Desplázate y selecciona "Añadir a Pantalla de inicio"');
+            alert('iPhone (Safari):\n' +
+                  '1. Abre NFLOW en Safari.\n' +
+                  '2. Pulsa el botón de compartir.\n' +
+                  '3. Selecciona "Añadir a pantalla de inicio".\n' +
+                  '4. Pon el nombre que quieras y pulsa "Añadir".\n\n' +
+                  'Así tendrás un icono directo como si fuera una app.');
           } else {
-            // Probablemente ya está instalada o no es compatible
-            alert('La aplicación ya está instalada o tu navegador no soporta la instalación de PWAs');
+            alert('Android (Chrome):\n' +
+                  '1. Abre NFLOW en Chrome.\n' +
+                  '2. Toca los tres puntos del menú.\n' +
+                  '3. Selecciona "Añadir a pantalla de inicio".\n' +
+                  '4. Escribe el nombre y confirma.\n\n' +
+                  'Así tendrás un icono directo como si fuera una app.');
           }
           return;
         }
