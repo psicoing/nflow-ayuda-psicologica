@@ -6,7 +6,9 @@ const targetExtensions = ['.js', '.ts', '.tsx', '.html', '.env', '.json'];
 const keywords = [
   'VITE_', 'API_KEY', 'SECRET', 'TOKEN', 'firebaseConfig', 'plan_id',
   'client_id', 'client_secret', 'PAYPAL', 'stripe', 'access_token',
-  'OPENAI', 'DATABASE_URL', 'SESSION_SECRET'
+  'OPENAI', 'DATABASE_URL', 'SESSION_SECRET',
+  'PGUSER', 'PGHOST', 'PGPASSWORD', 'PGDATABASE', 'PGPORT',
+  'STRIPE_WEBHOOK_SECRET', 'STRIPE_PRICE_ID'
 ];
 
 const scanFile = (filePath) => {
@@ -32,7 +34,7 @@ const scanDir = (dir) => {
 
   for (const file of files) {
     const filePath = path.join(dir, file);
-    
+
     // Ignorar node_modules y .git
     if (file === 'node_modules' || file === '.git') {
       continue;

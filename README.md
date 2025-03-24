@@ -19,6 +19,40 @@ Una aplicación web progresiva (PWA) avanzada que proporciona apoyo emocional y 
 - IA: OpenAI API
 - PWA: Service Workers y Web App Manifest
 
+## Configuración del Entorno
+
+1. Clona el repositorio:
+```bash
+git clone https://github.com/psicoing/nflow-ayuda-psicologica.git
+cd nflow-ayuda-psicologica
+```
+
+2. Instala las dependencias:
+```bash
+npm install
+```
+
+3. Configura las variables de entorno:
+   - Copia el archivo `.env.example` a `.env`
+   - Completa todas las variables con tus propias claves y configuraciones
+
+### Obtención de Claves API
+
+#### OpenAI API
+1. Ve a [OpenAI API Keys](https://platform.openai.com/account/api-keys)
+2. Crea una nueva clave API
+3. Copia la clave en `OPENAI_API_KEY` en tu archivo `.env`
+
+#### PayPal
+1. Accede a [PayPal Developer](https://developer.paypal.com/)
+2. Crea una aplicación en el Sandbox
+3. Copia el Client ID y Secret en `PAYPAL_CLIENT_ID` y `PAYPAL_SECRET`
+
+#### Stripe
+1. Ve a [Stripe Dashboard](https://dashboard.stripe.com/apikeys)
+2. Copia las claves pública y secreta en `VITE_STRIPE_PUBLIC_KEY` y `STRIPE_SECRET_KEY`
+3. Configura un Webhook y copia su secreto en `STRIPE_WEBHOOK_SECRET`
+
 ## Instalación
 
 La aplicación puede instalarse como una PWA en dispositivos móviles:
@@ -38,9 +72,6 @@ La aplicación puede instalarse como una PWA en dispositivos móviles:
 ## Desarrollo
 
 ```bash
-# Instalar dependencias
-npm install
-
 # Iniciar en modo desarrollo
 npm run dev
 ```
