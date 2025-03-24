@@ -38,7 +38,7 @@ export function ChatInterface({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || (user?.role === "user" && remainingMessages === 0)) return;
 
     onSendMessage(input);
     setInput("");
@@ -94,7 +94,10 @@ export function ChatInterface({
                   <div className="relative">
                     <User className="h-5 w-5" />
                     {user?.role === "user" && (
-                      <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-orange-500" title="Usuario gratuito" />
+                      <span
+                        className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-orange-500"
+                        title="Usuario gratuito"
+                      />
                     )}
                   </div>
                 ) : (

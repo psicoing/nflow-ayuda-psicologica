@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { processUserMessage } from "./promptHandler";
-import { Message } from "@shared/schema";
+import { Message, MAX_FREE_MESSAGES } from "@shared/schema";
 import cors from "cors";
 import express from 'express';
 
@@ -51,7 +51,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Verificar límite de mensajes para usuarios gratuitos
       if (user.role === "user") {
-        const messageCount = user.messageCount || 0;
+        const messageCount = await storage.getMessageCount(user.id);
         if (messageCount >= MAX_FREE_MESSAGES) {
           return res.status(403).json({
             message: "Has alcanzado el límite de mensajes gratuitos",
@@ -79,19 +79,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ];
 
       // Actualizar el contador de mensajes para usuarios gratuitos
+      let remainingMessages = null;
       if (user.role === "user") {
-        await storage.incrementMessageCount(user.id);
+        const updatedUser = await storage.incrementMessageCount(user.id);
+        remainingMessages = MAX_FREE_MESSAGES - updatedUser.messageCount;
       }
 
       // Guardar el chat
       const chat = await storage.saveChat(user.id, messages);
 
-      // Obtener el número de mensajes restantes
-      const remainingMessages = user.role === "user" 
-        ? MAX_FREE_MESSAGES - (user.messageCount + 1)
-        : null;
-
-      res.json({ ...chat, remainingMessages });
+      res.json({ 
+        ...chat, 
+        remainingMessages,
+        messages 
+      });
 
     } catch (error: any) {
       console.error('Error al procesar mensaje:', error);
