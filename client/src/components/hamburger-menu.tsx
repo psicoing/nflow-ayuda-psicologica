@@ -17,10 +17,16 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { DeactivateAccountDialog } from "./deactivate-account-dialog";
 import { useLocation } from "wouter";
+import { useEffect, useState } from 'react';
 
 export function HamburgerMenu() {
   const { user, logoutMutation } = useAuth();
   const [, navigate] = useLocation();
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent));
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -130,7 +136,7 @@ export function HamburgerMenu() {
                 id="pwa-install-button"
               >
                 <Download className="h-5 w-5" />
-                Instalar app
+                {isIOS ? 'Añadir a Pantalla de inicio' : 'Instalar app'}
               </Button>
             </>
           )}

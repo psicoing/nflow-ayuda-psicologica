@@ -30,7 +30,17 @@
       });
 
       window.addEventListener('install-pwa', async () => {
-        if (!deferredPrompt) return;
+        if (!deferredPrompt) {
+          // Si no hay prompt de instalación, significa que estamos en iOS o ya está instalada
+          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+          if (isIOS) {
+            alert('Para instalar la aplicación:\n1. Toca el botón Compartir (📲)\n2. Desplázate y selecciona "Añadir a Pantalla de inicio"');
+          } else {
+            // Probablemente ya está instalada o no es compatible
+            alert('La aplicación ya está instalada o tu navegador no soporta la instalación de PWAs');
+          }
+          return;
+        }
 
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
