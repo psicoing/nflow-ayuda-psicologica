@@ -53,7 +53,20 @@ npm install
 2. Copia las claves pública y secreta en `VITE_STRIPE_PUBLIC_KEY` y `STRIPE_SECRET_KEY`
 3. Configura un Webhook y copia su secreto en `STRIPE_WEBHOOK_SECRET`
 
-## Instalación
+### Configuración de la Base de Datos
+
+La aplicación utiliza PostgreSQL. Asegúrate de tener PostgreSQL instalado y configura las siguientes variables en tu archivo `.env`:
+
+```env
+DATABASE_URL=postgres://usuario:contraseña@host:puerto/nombre_db
+PGUSER=usuario_postgres
+PGHOST=host_postgres
+PGPASSWORD=contraseña_postgres
+PGDATABASE=nombre_base_datos
+PGPORT=5432
+```
+
+## Instalación como PWA
 
 La aplicación puede instalarse como una PWA en dispositivos móviles:
 
@@ -75,6 +88,22 @@ La aplicación puede instalarse como una PWA en dispositivos móviles:
 # Iniciar en modo desarrollo
 npm run dev
 ```
+
+## Seguridad
+
+- Nunca cometas archivos `.env` o cualquier archivo que contenga secretos
+- Usa siempre variables de entorno para las claves API
+- Revisa regularmente las dependencias en busca de vulnerabilidades con `npm audit`
+- Realiza copias de seguridad regulares de la base de datos
+- Mantén todas las dependencias actualizadas
+
+## Contribución
+
+1. Haz un fork del repositorio
+2. Crea una rama para tu característica (`git checkout -b feature/nueva-caracteristica`)
+3. Haz commit de tus cambios (`git commit -am 'Añade nueva característica'`)
+4. Push a la rama (`git push origin feature/nueva-caracteristica`)
+5. Crea un Pull Request
 
 ## Licencia
 
